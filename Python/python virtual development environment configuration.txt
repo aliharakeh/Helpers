@@ -1,0 +1,15 @@
+Install and configure python's virtual development envirnoment:
+---------------------------------------------------------------
+1 - pip install virtualenv
+2 - pip install virtualenvwrapper
+3 - echo -e "\n# virtualenv and virtualenvwrapper" >> ~/.bashrc (append comment)
+4 - echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc (append environment variable)
+5 - echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc (append environment variable)
+6 - echo "source ~/.local/bin/virtualenvwrapper.sh" >> ~/.bashrc (append shell file execution code)
+
+Commands:
+---------
+	1 - mkvirtualenv <environment-name> (create environment folder in ~/.vertualenvs)
+	2 - workon <environment-name> (enter environment)
+	3 - deactivate (exit environment)
+	4 - rmvirtualenv <environment-name> (delete environment folder)

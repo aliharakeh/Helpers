@@ -1,0 +1,134 @@
+Preview Uploaded Image:
+=======================
+    previewImage(file: File) {
+        this.imgFile = file;
+        const fr = new FileReader();
+        fr.onload = () => {
+            this.img = fr.result;
+        };
+        fr.readAsDataURL(file);
+    }
+
+
+Upload Image:
+=============
+    data = {
+        'key1': <any>,
+        'image': <File>
+    }
+    const formData = new FormData();
+    for (const key in data) {
+        formData.append(key, data[key]);
+    }
+
+
+
+Route Parameters Observable:
+============================
+    <private route: ActivatedRoute>
+    -------------------------------
+    this.route.paramMap
+    .pipe(
+        switchMap((params: ParamMap) => {
+            return new Observable<any>(subscriber => subscriber.next(params.get('id')));
+        })
+    )
+    .subscribe(id => {
+        // code to do everytime id changes in url
+    });
+
+
+Usefull Observables - RXJS:
+===========================
+
+    1) Observable
+    =============
+    // new Observable
+    observable = new Observable<any>(subscriber => {
+        subscriber.next(<value1>);
+        subscriber.next(<value2>);
+        subscriber.next(<value3>);
+        subscriber.next(<value4>);
+        ...
+        subscriber.error(); // stop observable with error - optional
+        subscriber.complete(); // stop observable with complete - optional
+    })
+
+    // listen to what the observable emits
+    observable.subscribe(data => console.log(data)); // emits <value1>, <value2>, <value3>, <value4>, ..., error/complete
+
+    Note: Either error or complete can be provided. Not Both.
+
+
+    2) Operators for Observables:
+    =============================
+        Operators are applied using pipe() on Observables
+
+        example:
+        ========
+        observable
+            .pipe(
+                Operator1(...),
+                Operator2(...),
+                Operator3(...),
+                ...
+            )
+            .subscribe(...)
+
+        2.1) tap() operator:
+        ====================
+            allows you to add extra code to be done before you subscribe to the observable
+
+            example:
+            ========
+            observable
+                .pipe(
+                    tap(data => console.log(data)) // used the tap() operator for debuging
+                )
+                .subscribe(...)
+
+        2.2) catchError() operator:
+        ===========================
+            allows you to catch an error in the observable and handle it you way
+
+            example:
+            ========
+            observable
+                .pipe(
+                    catchError(error => console.log(error)) // display the error in console
+                )
+                .subscribe(...)
+
+        2.3) switchMap() operator:
+        ==========================
+            allows you to return a custom observable other than the main one you created
+
+            example:
+            ========
+            observable
+                .pipe(
+                    switchMap(paramMap => {
+                        return new Observable<any>(subscriber => subscriber.next(paramMap.get('id')));
+                    })
+                )
+                .subscribe(...)
+
+        2.4) map() operator:
+        ====================
+            allows you to alter that observer data you return
+
+            example:
+            ========
+            observable
+                .pipe(
+                    map(data => {
+                        return {
+                            ...data,
+                            new_field: 'new field value'
+                        }
+                    })
+                )
+                .subscribe(...)
+
+        
+

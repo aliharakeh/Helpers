@@ -2,8 +2,6 @@ from Scrapping.chrome import ChromeManager
 
 
 class ScrappingFunctions:
-    sites_index = None
-
     def __init__(self):
         self.sites_index = {
             'readlightnovel': self.read_light_novel_latest_chapters,

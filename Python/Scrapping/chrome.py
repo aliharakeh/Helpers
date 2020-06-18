@@ -7,8 +7,6 @@ import time
 
 
 class ChromeManager:
-    _driver = None
-
     def __init__(self, driver_path='chromedriver', headless=False, window_size='1200x600'):
         _options = webdriver.ChromeOptions()
         _options.add_argument(f'window-size={window_size}')

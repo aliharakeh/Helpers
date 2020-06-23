@@ -4,8 +4,8 @@ class A:
 
     def __init__(self):
         # instance variables
-        self.a = 3
-        self.b = 2
+        self.a = 2
+        self.b = 3
 
     def change_static(self):
         A.a = 4

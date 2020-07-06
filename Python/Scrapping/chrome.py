@@ -51,6 +51,13 @@ class ChromeManager:
                 time.sleep(sleep_after_click)
 
     def scroll_page(self, scroll_count=10, scroll_till_end=False, scroll_delay_sec=3, external_func=False):
+        """
+        external_func=True example:
+        --------------------------
+        for _ in self._cm.scroll_page(scroll_till_end=True, external_func=True):
+            elements = self._cm.get_elements('div')
+            ...
+        """
         # define initial page height for 'while' loop
         last_height = self._driver.execute_script("return document.body.scrollHeight")
         scrolls = 0
@@ -67,7 +74,7 @@ class ChromeManager:
 
             # apply scroll function if available
             if external_func:
-                print('Scroll Function Called')
+                print('Running External Code')
                 yield
 
             # get new height

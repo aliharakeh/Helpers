@@ -1,0 +1,13 @@
+usefull commands:
+-----------------
+
+
+ssh user@192.168.1.1
+scp -r path_to_folder user@192.168.1.1:/tmp
+mv [path_to_folder1, ...] new_path/<optional-new-name>
+systemctl stop/start service_name.service (in /etc/systemd/system)
+find path_to_folder -name 'file_name_to_locate'
+locate 'file_name' (in whole system)
+7z x -p<password> <zip-file>
+hostname -I // ip address
+some_command & disown // detach process from current terminal and run it in the background

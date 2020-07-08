@@ -1,0 +1,53 @@
+<form [formGroup]="profile" (ngSubmit)="OnSubmit()">
+  <div class="row justify-content-center mt-3">
+
+    <div class="col-12 col-sm-6 col-md-4">
+      <mat-form-field class="form-field">
+        <input matInput placeholder="Username" formControlName="username" />
+        <mat-error *ngIf="profile.get('username').errors">
+          {{ printErrors('username', profile.get('username').errors) }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12"></div>
+
+    <div class="col-12 col-sm-6 col-md-4">
+      <mat-form-field class="form-field">
+        <input matInput placeholder="Display Name" formControlName="display_name" />
+        <mat-error *ngIf="profile.get('display_name').errors">
+          {{ printErrors('display_name', profile.get('display_name').errors) }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12"></div>
+
+    <div class="col-12 col-sm-6 col-md-4">
+      <mat-form-field class="form-field">
+        <input matInput placeholder="password" type="password" formControlName="password" />
+        <mat-error *ngIf="profile.get('password').errors">
+          {{ printErrors('password', profile.get('password').errors) }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12"></div>
+
+    <div class="col-12 col-sm-6 col-md-4">
+      <mat-form-field class="form-field">
+        <input matInput placeholder="Confirm password" type="password" formControlName="confirm_password" />
+        <mat-error *ngIf="profile.get('confirm_password').errors">
+          {{ printErrors('confirm_password', profile.get('confirm_password').errors) }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12"></div>
+
+    <div class="col-12 col-sm-6 col-md-4 text-center">
+      <button mat-raised-button color="primary" style="margin-top: 10px">Submit</button>
+    </div>
+
+  </div>
+</form>

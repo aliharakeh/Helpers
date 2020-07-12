@@ -36,7 +36,7 @@ class ChromeManager:
             return elements[0] if len(elements) == 1 else None
         return elements
 
-    def click_element(self, selector, sleep_after_click=2):
+    def click_element(self, selector, delay_after_click=2):
         try:
             self._driver.find_element_by_css_selector(selector).click()
             print('[INFO] Click...')
@@ -47,8 +47,8 @@ class ChromeManager:
             return 0
 
         finally:
-            if sleep_after_click:
-                time.sleep(sleep_after_click)
+            if delay_after_click:
+                time.sleep(delay_after_click)
 
     def scroll_page(self, scroll_count=10, scroll_till_end=False, scroll_delay_sec=3, external_func=False):
         """
@@ -61,8 +61,15 @@ class ChromeManager:
         # define initial page height for 'while' loop
         last_height = self._driver.execute_script("return document.body.scrollHeight")
         scrolls = 0
+        is_end_reached = False
 
         while True:
+
+            # apply scroll function if available
+            if external_func:
+                print('Running External Code...')
+                yield is_end_reached
+
             # scroll page
             self._driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -72,23 +79,35 @@ class ChromeManager:
             # increment scroll count
             scrolls += 1
 
-            # apply scroll function if available
-            if external_func:
-                print('Running External Code')
-                yield
-
             # get new height
             new_height = self._driver.execute_script("return document.body.scrollHeight")
 
             # stop conditions
-            stop_condition = (new_height == last_height) if scroll_till_end else (scrolls == scroll_count)
+            is_end_reached = new_height == last_height
+            is_scroll_count_reached = scrolls == scroll_count
+            stop_condition = is_end_reached if scroll_till_end else (is_scroll_count_reached or is_end_reached)
             if stop_condition:
                 break
             else:
                 last_height = new_height
 
+        if not external_func:
+            return is_end_reached
+
     def get_page_source(self):
         return self._driver.page_source
+
+    def set_value(self, selector, value):
+        element = self.get_elements(selector, single_element=True)
+        if element:
+            element.clear()
+            element.send_keys(value)
+
+    def get_value(self, selector):
+        e = self.get_elements(selector, single_element=True)
+        if e:
+            return e.text
+        return None
 
     def close(self):
         self._driver.close()

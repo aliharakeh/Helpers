@@ -7,12 +7,19 @@ PROBLEM_CHARS = r'[\[=\+/&<>;:!\\|*^\'"\?%$@)(_\,\.\t\r\n0-9-—\]]'
 
 class LocationParser:
     Cities = None
+    Cities_Details = None
 
     @staticmethod
     def load_locations(cities_json):
         if LocationParser.Cities is None:
-            with open(cities_json) as cities_file:
+            with open(cities_json, 'r', encoding='utf-8') as cities_file:
                 LocationParser.Cities = json.loads(cities_file.read())
+
+    @staticmethod
+    def load_locations_details(cities_json):
+        if LocationParser.Cities_Details is None:
+            with open(cities_json, 'r', encoding='utf-8') as cities_file:
+                LocationParser.Cities_Details = json.loads(cities_file.read())
 
     @staticmethod
     def get_words(text):
@@ -23,7 +30,7 @@ class LocationParser:
         return map(lambda s: s.strip(), text.split(' '))
 
     @staticmethod
-    def check_and_get_location(word, ratio=0.8):
+    def check_and_get_location(word, similarity_ratio=0.8):
         """
         returns the exact locations name or possible location name if there was a match, else returns None
 
@@ -52,24 +59,34 @@ class LocationParser:
                 city_lowercase = city.lower()
                 if word == city_lowercase:
                     return city
-                if SequenceMatcher(None, word, city_lowercase).ratio() >= ratio:
+                if SequenceMatcher(None, word, city_lowercase).ratio() >= similarity_ratio:
                     possible_city = city
         return possible_city
 
     @staticmethod
-    def get_locations(tweet_text, ratio=0.8):
+    def get_locations(text, similarity_ratio=0.8):
         """
         returns a sorted list of locations in the provided text with the their frequencies
         """
         if LocationParser.Cities is None:
             return []
 
-        words = LocationParser.get_words(tweet_text)
+        words = LocationParser.get_words(text)
         locations = {}
         for word in words:
-            location = LocationParser.check_and_get_location(word, ratio)
+            location = LocationParser.check_and_get_location(word, similarity_ratio)
             if location:
                 if word not in locations:
                     locations[location] = 0
                 locations[location] += 1
         return sorted(locations.items(), key=lambda l: l[1], reverse=True)
+
+    @staticmethod
+    def get_location_aliases(location):
+        location_data = LocationParser.Cities_Details[location]
+        res = []
+        if location_data['latin']:
+            res += location_data['latin']
+        if location_data['non-latin']:
+            res += location_data['non-latin']
+        return list({r for r in res})

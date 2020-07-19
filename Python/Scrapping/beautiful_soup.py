@@ -18,7 +18,7 @@ class BeautifulSoupScrap:
         if isinstance(source, BeautifulSoup):
             return SourceType.BS4
         if isinstance(source, str):
-            if 'http' in source:
+            if source.startswith('http'):
                 return SourceType.URL
             else:
                 return SourceType.HTML
@@ -28,7 +28,8 @@ class BeautifulSoupScrap:
     def set_source(source):
         """
         set the scrapping content source.\n
-        a source can be:\n
+        a source can be:
+        ----------------
         - bs4 >>> BeautifulSoup(html, 'html.parser')
         - url >>> 'http://....'
         - html >>> '<html>....</html' or '<any-tag>...</any-tag>' or ...
@@ -40,7 +41,8 @@ class BeautifulSoupScrap:
     def get_bs4(source=None):
         """
         returns a bs4 object or None from a source.\n
-        a source can be:\n
+        a source can be:
+        ----------------
         - bs4 >>> BeautifulSoup(html, 'html.parser')
         - url >>> 'http://....'
         - html >>> '<html>....</html' or '<any-tag>...</any-tag>' or ...
@@ -72,7 +74,8 @@ class BeautifulSoupScrap:
         """
         returns the first element found in the global source or any provided source.\n
         None if no source is provided.\n
-        a source can be:\n
+        a source can be:
+        ----------------
         - bs4 >>> BeautifulSoup(html, 'html.parser')
         - url >>> 'http://....'
         - html >>> '<html>....</html' or '<any-tag>...</any-tag>' or ...
@@ -87,7 +90,8 @@ class BeautifulSoupScrap:
         """
         returns a list of elements found in the global source or any provided source.\n
         [] if no source (bs4-html-url) is provided.\n
-        a source can be:\n
+        a source can be:
+        ----------------
         - bs4 >>> BeautifulSoup(html, 'html.parser')
         - url >>> 'http://....'
         - html >>> '<html>....</html' or '<any-tag>...</any-tag>' or ...

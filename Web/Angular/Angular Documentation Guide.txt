@@ -1,0 +1,179 @@
+Basics:
+-------
+    - Components: [https://angular.io/guide/architecture-components]
+    -------------
+        - Basically a Widget
+        - Can have child widgets
+        - Can be used anywhere
+        - Usually consists of 4 files: HTML, JavaScript, CSS, and Test
+        - Command: ng generate component /path/to/component_name
+        - Command alias: ng g c /path/to/component_name
+        - Command exclusidng test file: ng g c path/to/component_name --skipTests=true
+
+    - Services: [https://angular.io/guide/architecture-services]
+    -----------
+        - Usually used to manage shared data between components or to handle something gloablly for all the app
+        - Consists of 2 files: JavaScript & Test
+        - Command: ng generate service /path/to/service_name
+        - Command alias: ng g s /path/to/service_name
+        - Command exclusidng test file: ng g s /path/to/service_name --skipTests=true
+    
+    - Routing: [https://angular.io/guide/router]
+    ----------
+
+    - Interpolation: [https://angular.io/guide/interpolation]
+    ----------------
+        - Use {{ ... }} to display any data from JavaScript into HTML
+
+        Example 1:
+        ----------
+            JavaScript:
+            -----------
+            Title = 'Angular App';
+
+            HTML:
+            -----
+            <h1> {{ Title }} </h1> 
+
+            Result:
+            -------
+            <h1> Angular App </h1>
+
+        Example 2:
+        ----------
+        JavaScript:
+            -----------
+            Class = 'blue-text';
+
+            HTML:
+            -----------
+            <h1 class='{{Class}}'> Angular App </h1> 
+
+            Result:
+            -------
+            <h1 class='blue-text'> Angular App </h1> (blue text color style)
+
+    - 1 Way Binding: [https://angular.io/guide/binding-syntax, https://angular.io/guide/property-binding, https://angular.io/guide/attribute-binding, https://angular.io/guide/event-binding]
+    ----------------
+        - Use [ ... ] to assign the right side to the left side, equivalent to JavaScript: let b = 1; a = b;
+
+        Example:
+        --------
+            JavaScript:
+            -----------
+            Class = 'blue-text';
+
+            HTML:
+            -----------
+            <h1 [class]='Class'> Angular App </h1> 
+            
+            Result:
+            -------
+            <h1 class='blue-text'> Angular App </h1> (blue text color style)
+
+    - 2 Way Binding: [https://angular.io/guide/two-way-binding]
+    ----------------
+        - Mostle used with [(NgModel)] in form inputs, like select, input, textbox, radio, checkbox, ...
+        - [(NgModel)] = 'a' is equivalent to JavaScript: input_value = a; (by reference. so when a changes, the input value changes too)
+
+        NgModel Example: (most use case)
+        ----------------
+            JavaScript:
+            -----------
+            value = 'Angular App';
+
+            HTML:
+            -----
+            <input placeholder='Enter Title' [(NgModel)]='value'>
+            <h1> {{ value }} </h1>
+
+            Result:
+            -------
+            <h1> Angular App </h1> (will be changed when input value changes)
+
+
+Intermediate:
+-------------
+    - Forms: [https://angular.io/guide/reactive-forms, https://angular.io/guide/form-validation]
+    --------
+        Example:
+        --------
+            profileForm = new FormGroup({
+                firstName: new FormControl(''), <--- '' is the default value
+                lastName: new FormControl(''),
+            });
+
+    - Components Interaction: [https://angular.io/guide/component-interaction]
+    ------------------------
+        Examples:
+        ---------
+            - @Input: allows to inject data from parents component to child components
+            ---------
+                Parent Component:
+                -----------------
+                    JavaScript: 
+                    -----------
+                    Title = 'Angular App'
+
+                    HTML: 
+                    -----
+                    <child-compontent [title]='Title'></child-component> 
+                
+                Child Component:
+                ----------------
+                    JavaScript: 
+                    -----------
+                    @Input() title;
+
+                    HTML:
+                    -----
+                    <h1>{{ title }} </h1>
+                
+            - @Output: allows to ouput component data by using EventEmitter() class emit() function
+            ----------
+                Parent Component:
+                -----------------
+                    JavaScript:
+                    -----------
+                        Title = 'Angular App'
+                    HTML:
+                    -----
+                        <child-compontent [onTitleChange]='changeTitle()'></child-component>
+                        <h1> {{ Title }}</h1>
+                
+                Child Component:
+                ----------------
+                    JavaScript:
+                    -----------
+                    @Output() onTitleChange = EventEmitter();
+
+                    output() {
+                        onTitleChange.emit('New Title');
+                    }
+
+                    HTML:
+                    -----
+                    <input (onChnage)='ouput($event.value)'
+
+    - Pipes: [https://angular.io/guide/pipes]
+    --------
+
+Advanced:
+---------
+    - Obervables: [https://github.com/darkside-e/Helpers/blob/master/Web/Angular/RxJS%20Observers.txt]
+    -------------
+    Some notes I wrote about useful observables and how they function
+
+    - http Client: [https://angular.io/guide/http]
+    --------------
+    You can find a helper service writter bt me at [https://github.com/darkside-e/Helpers/blob/master/Web/Angular/http.service.ts]
+
+
+Helpful Angular Stuff: (My github repo)
+----------------------
+https://github.com/darkside-e/Helpers/tree/master/Web/Angular
+
+
+P.S. For those English-Natzis guys out there:
+---------------------------------------------
+If you find any english error do correct it yourself and spare me the nagging. One Natzi is enough for me.

@@ -1,0 +1,125 @@
+●ls (option) file : to see the directory contents
+options:
+-no option, the ls sort the files alphabetically
+-a show all with . (hidden file)
+-A show almost all without . and . .
+-c list by column
+-l give each content's permissions
+-1 each content on a new line
+-F: put / for directory ,* for exe, and @ for links
+-r show in reverse 
+-lh/hl/.. : show thr size in human readable mode
+
+●file file_name: to know the file type.
+
+●touch file_name: creates an empty file with the name file_name
+
+●mkdir option directory_name:
+creates a directory (folder)
+- mkdir -p dir1/dir2/dir3/..etc:
+to create sub directories tree
+
+●rmdir option directory_name:
+to remove an empty directory
+use -p option to remove subdirectory and its parent.
+
+●wc (option) file :return the count nb of line...words...letters
+options:
+-w only nb word with filename
+-m only nb letters with filename(or -c byte count)
+-l only nb lines with file name
+to remove filename use:
+wc (option) < filename
+
+●mv (option) source to destination or 
+mv (option) name  newname: move source to dest by specifying a path or rename a file or directory
+can rename both filescand dirs
+options:
+-f force
+-i overwrite a files content
+
+●rm file : remove a file
+●rmdir folder or rm -r folder :remove an empty directory,if not empty then u need to empty it manually then use rmdir
+
+●cat (option) file: show the file content or append to a file or create a new file or overwrite a file.
+cat filename:show file content
+cat >filename:create file and write to it
+cat >> filename:append to file
+cat file1 file2 > file3:append file1 and file2 ina a file called fil3
+
+●sort (option) file: sort a file
+-r reverse sort
+-sort file1 > file2: output sorted file into another file
+-sort <file sort the inputed file but dont change its content
+-sort < file1 >file2 sort file1 and put it in file 2
+
+●head (option) file:
+head -c nb file print first nb chars from file
+head -nb file print first nb lines from file
+
+●tail (option) file:
+tail -nb file: print last nb lines from file
+tail -c nb file: print last nb chars from file
+
+●more file and less file
+
+●grep (option) pattern file:searches for similar patterns in a given file pattern can be a word/symbols/....
+-by default it print the matching pattern line not just the pattern
+-i ignore case(upper/small case)
+-c print the count of matching lines instead of the lines themselves
+
+●cp (option) source destination:cpy source to destination.(src=file, dest=file.cpy/directory)
+- cp -i source destination to promt to overwrite or not.
+- cp -r source_dir dest_dir : copy the whole directory
+- you can cpy more than one source to dest.
+
+
+●echo "content to print"
+options:
+-n no new line,print at same line
+
+●if/else:
+syntax:
+if [ expr1 option expr2 ]; then
+............
+else
+............
+fi (to end if)
+
+● for loop:
+syntax:
+for i in $x
+do
+............
+done
+i: any variable to use put $i
+$x:can be $* or path/*.txt or any set
+n=$#: nb of arguments
+
+●while loop:
+syntax:
+while [ condition ]
+do
+.............
+done
+
+●switch:
+syntax:
+case $x in
+1) .....;;
+2)......;;
+3)......;;
+.
+.
+.
+*) echo "any other case no specified" ;;
+esac ( to end case)
+
+●to use +/*/÷/- :
+put +....\*.....\÷......\-
+j=`expr $j + $i`
+j='expr $j \* $i'
+
+●spaces are necessary in all the above syntaxes
+
+● when solving forks remember to create the childs first by a for loop then close it then do the other work u need to do.

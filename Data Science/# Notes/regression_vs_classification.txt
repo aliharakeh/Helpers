@@ -1,0 +1,18 @@
+Regression
+-----------
+    - results in a value
+    - predicts a future value of something
+    - depends on previous data - the more the better
+    - Note:
+     ------
+        - logistic regression is actually a kind of classification
+
+    ex: predicts the value of USD $ next month
+
+Classification
+--------------
+    - results in a class
+    - classifies something into the available classes
+    - learns from previous data - the more is not always better (unbalanced data)
+
+    ex: classifies if an someone has a specific disease or not

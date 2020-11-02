@@ -1,171 +1,257 @@
 import re
 import json
-from difflib import SequenceMatcher
+from fuzzywuzzy import fuzz
+import jellyfish
 import functools
+from difflib import SequenceMatcher
+import os
 
 PROBLEM_CHARS = r'[\[=\+/&<>;:!\\|*^\'"\?%$@)(_\,\.\t\r\n0-9-—\]]'
 ARABIC_REGEX = '[\u0621-\u064A]+'
+EN_ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyz123456789 \t\n'
+LOCAL_DIR = os.path.dirname(__file__)
+CITIES_FILE = 'cities.json'
+CITIES_DETAILS_FILE = 'cities_details.json'
 
 
-# a decorator with arguments to check if data is loaded and load it if it's not
-def check_loaded_data(cities=False, cities_details=False, on_error_value=None):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                if cities and not LocationParser.Cities:
-                    LocationParser.load_locations()
-                if cities_details and not LocationParser.Cities_Details:
-                    LocationParser.load_locations_details()
-            except:
-                print('[Error]: Data File(s) Not Found!! Please Load Data Manually')
-                return on_error_value
+# decorator to load details data when needed only
+def load_details(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            if not LocationFinder.Cities_Details:
+                LocationFinder.load_locations_details()
+
             return func(*args, **kwargs)
 
-        return wrapper
+        except FileNotFoundError:
+            print('[Error]: Data File(s) Not Found!! Please Load Data Manually')
 
-    return decorator
+    return wrapper
 
 
-class LocationParser:
+class Methods:
+    SEQUENCE = 'sequence'
+    EDIT_DISTANCE = 'edit-distance'
+    SOUND = 'sound'
+
+
+class PredictionMethods:
+
+    def __init__(self, a=None, b=None, method=Methods.EDIT_DISTANCE, accepted_ratio=80):
+        self.a = a
+        self.b = b
+        self.accepted_ratio = accepted_ratio
+
+        self.methods = {
+            Methods.SOUND: self.by_sound,
+            Methods.EDIT_DISTANCE: self.by_edit_distance,
+            Methods.SEQUENCE: self.by_sequence
+        }
+        self.method = self.methods[method]
+
+    def by_sound(self):
+        a = jellyfish.soundex(self.a)
+        b = jellyfish.soundex(self.b)
+        similarity_ratio = fuzz.ratio(self.a, self.b)
+
+        accepted_prediction = (a == b) and (similarity_ratio >= self.accepted_ratio)
+        return similarity_ratio, accepted_prediction
+
+    def by_edit_distance(self):
+        partial_ratio = fuzz.partial_ratio(self.a, self.b)
+        ratio = fuzz.ratio(self.a, self.b)
+        similarity_ratio = (partial_ratio + ratio) / 2
+
+        accepted_prediction = similarity_ratio >= self.accepted_ratio
+        return similarity_ratio, accepted_prediction
+
+    def by_sequence(self):
+        similarity_ratio = SequenceMatcher(None, self.a, self.b).ratio() * 100
+        count_a, count_b = self.a.count(' '), self.b.count(' ')
+        count_ratio = (min(count_a, count_b) / max(count_a, count_b)) * 100
+
+        accepted_prediction = count_ratio and (similarity_ratio >= self.accepted_ratio)
+        return similarity_ratio, accepted_prediction
+
+    def get_ratio(self):
+        return self.method()
+
+
+class LocationFinder:
     Cities = None
     Cities_Details = None
 
-    @staticmethod
-    def load_locations(cities_json='cities.json'):
-        if LocationParser.Cities is None:
+    def __init__(self):
+        self.load_locations()
+
+    @classmethod
+    def load_locations(cls, cities_json=f'{LOCAL_DIR}\\{CITIES_FILE}'):
+        if cls.Cities is None:
             with open(cities_json, 'r', encoding='utf-8') as cities_file:
-                LocationParser.Cities = json.loads(cities_file.read())
+                cls.Cities = json.loads(cities_file.read())
+
+    @classmethod
+    def load_locations_details(cls, cities_json=f'{LOCAL_DIR}\\{CITIES_DETAILS_FILE}'):
+        if cls.Cities_Details is None:
+            with open(cities_json, 'r', encoding='utf-8') as cities_file:
+                cls.Cities_Details = json.loads(cities_file.read())
 
     @staticmethod
-    def load_locations_details(cities_json='cities_details.json'):
-        if LocationParser.Cities_Details is None:
-            with open(cities_json, 'r', encoding='utf-8') as cities_file:
-                LocationParser.Cities_Details = json.loads(cities_file.read())
+    def __is_english(word):
+        for char in word:
+            if char not in EN_ALPHANUMERIC:
+                return False
+        return True
 
-    @staticmethod
-    def get_words(text, max_words_in_an_element=5):
+    def __separate_languages(self, text):
         """
-        returns a list of words cleaned from any problem char. \n
+        cleans the text from any problem chars and return 2 lists each representing arabic and english words respectively. \n
         PROBLEM_CHARS = '[\[=\+/&<>;:!\\|*^\'"\?%$@)(_\,\.\t\r\n0-9-—\]]'
         """
         text = re.sub(PROBLEM_CHARS, '', text)
         words = text.split()
-        word_count = len(words)
-
-        result = []
-        for i in range(word_count):
-            for j in range(max_words_in_an_element):
-                if i + j < word_count:
-                    result.append(" ".join(words[i: i + j + 1]))
-
-        return result
-
-    @staticmethod
-    @check_loaded_data(cities=True, on_error_value=[])
-    def get_possible_locations(first_letter, second_letter):
-        """
-        returns a list of locations that match any of the following conditions: \n
-        - locations that starts with first_letter & second_letter
-        - locations that starts with first_letter but not with second_letter
-        - [] if nothing starts with the first letter
-        """
-        if first_letter in LocationParser.Cities:
-            level_1_data = LocationParser.Cities[first_letter]
-
-            # locations that starts with first_letter & second_letter
-            if second_letter and second_letter in level_1_data:
-                return level_1_data[second_letter]
-
-            # locations that starts with first_letter but not with second_letter
+        en = []
+        others = []
+        for word in words:
+            if self.__is_english(word):
+                en.append(word)
             else:
-                res = []
-                for locations in level_1_data.values():
-                    res += locations
-                return res
+                others.append(word)
+        return en, others
 
-        # nothing starts with the first letter
-        else:
-            return []
+    @classmethod
+    def __get_location_details(cls, location):
+        return cls.Cities_Details.get(location, None)
 
-    @staticmethod
-    @check_loaded_data(cities=True, on_error_value=None)
-    def get_location(word, similarity_ratio=0.8):
+    @classmethod
+    def get_locations(cls, lang=None):
         """
-        returns the exact location name or the best predicted/possible location name if there was any match,
-        else returns None
+        return a list of locations.\n
+        can be:
+        - lang = None --> all locations
+        - lang = 'en' --> locations in english
+        - lang = 'ar' --> locations in arabic
         """
-        if len(word) < 2:
-            return None
+        res = []
+        for k, v in cls.Cities.items():
+            # exclude non english when lang == 'en'
+            if (lang == 'en') and (k not in EN_ALPHANUMERIC):
+                continue
+
+            # exclude english when lang == 'ar'
+            if (lang == 'ar') and (k in EN_ALPHANUMERIC):
+                continue
+
+            for k1, v1 in v.items():
+                res += v1
+        return res
+
+    def search(self, keyword, lang=None, method=Methods.EDIT_DISTANCE, accepted_ratio=80):
+        """
+        returns a matched location `(location, match ratio)` if a match was found OR `(None, -1)` if nothing was found.\n
+        Note: match ratio ranges from 0 to 100, where 100 is an exact match.
+        """
+        if len(keyword) <= 2:
+            return None, -1
 
         # initialize
-        word = word.lower()
-        best_predicted_location = (None, None)
+        keyword = keyword.lower()
+        best_predicted = (None, -1)  # (location, similarity_ratio)
+        prediction_method = PredictionMethods(a=keyword, method=method, accepted_ratio=accepted_ratio)
 
         # check possible locations
-        locations = LocationParser.get_possible_locations(word[0], word[1])
+        locations = self.get_locations(lang=lang)
         for location in locations:
             # check exact location name
-            if word == location:
-                return location.capitalize()
+            if location == keyword:
+                return location, 100
 
-            # check similarity ratio
-            local_similarity_ratio = SequenceMatcher(None, word, location).ratio()
-            same_word_count = word.count(' ') == location.count(' ')
+            prediction_method.b = location
+            similarity_ratio, accepted_prediction = prediction_method.get_ratio()
 
-            if same_word_count and local_similarity_ratio >= similarity_ratio:
-                if not best_predicted_location[0] or local_similarity_ratio > best_predicted_location[1]:
-                    best_predicted_location = (location.capitalize(), local_similarity_ratio)
+            # conditions
+            first_prediction = best_predicted[1] == -1
+            better_prediction = similarity_ratio > best_predicted[1]
 
-        return best_predicted_location[0]
+            # update prediction
+            if accepted_prediction and (first_prediction or better_prediction):
+                best_predicted = (location, similarity_ratio)
 
-    @staticmethod
-    @check_loaded_data(cities=True, on_error_value=[])
-    def get_locations(text, similarity_ratio=0.8):
+        return best_predicted
+
+    def search_words(self, words, lang=None, method=Methods.EDIT_DISTANCE, accepted_ratio=80):
         """
-        returns a descending sorted list of location tuples containing the location name and its frequency
-        found in the provided text
+        returns a list of matched locations `(location, match ratio)` for every word in the list provided. \n
+        Note: match ratio ranges from 0 to 100, where 100 is an exact match.
         """
-        if LocationParser.Cities is None:
-            return []
-
-        # get words list
-        words = LocationParser.get_words(text)
-        locations = {}
-
-        # check if any word refers to a location
+        locations = []
         for word in words:
-            location = LocationParser.get_location(word, similarity_ratio)
+            location = self.search(word, lang, method, accepted_ratio)
+            if location[0]:
+                locations.append(location)
+        return locations
 
-            # add the location to the possible locations if it matches any location data
-            if location:
-                if location not in locations:
-                    locations[location] = 0
-                locations[location] += 1
+    def search_text(self, text, method=Methods.EDIT_DISTANCE, accepted_ratio=80):
+        """
+        returns a descending sorted list of matched locations `(location, match ratio)` that were found in the text. \n
+        Use method={'en': Methods.SOUND, 'ar': Methods.EDIT_DISTANCE} for more different langs. \n
+        Note: match ratio ranges from 0 to 100, where 100 is an exact match.
+        """
+        # get words list
+        en, ar = self.__separate_languages(text)
+        en_locations, ar_locations = [], []
+
+        # methods
+        if isinstance(method, dict):
+            method_en = method['en']
+            method_ar = method['ar']
+        else:
+            method_en = method_ar = method
+
+        # predict locations
+        if en:
+            en_locations = self.search_words(en, 'en', method_en, accepted_ratio)
+
+        if ar:
+            ar_locations = self.search_words(ar, 'ar', method_ar, accepted_ratio)
+
+        # combine results
+        locations = [
+            *en_locations,
+            *ar_locations
+        ]
 
         # return a descending sorted list of tuples containing the location name and it's frequency
-        return sorted(locations.items(), key=lambda l: l[1], reverse=True)
+        return sorted(locations, key=lambda l: l[1], reverse=True)
 
-    @staticmethod
-    @check_loaded_data(cities=True, cities_details=True, on_error_value=None)
-    def get_location_details(location):
+    @load_details
+    def get_location_details(self, location, predict=False):
+        """
+        returns a location details
+        Note: It predicts the location if no exact match was found.
+        """
         # get location data
-        location_data = LocationParser.Cities_Details.get(location, None)
+        location = location.lower()
+        location_data = self.__get_location_details(location)
 
         # if location is not found, check if it refers to a location and get its data
-        if not location_data:
-            location = LocationParser.get_location(location)
-            return LocationParser.Cities_Details.get(location, None)
+        if not location_data and predict:
+            lang, method = ('en', Methods.SOUND) if self.__is_english(location) else ('ar', Methods.EDIT_DISTANCE)
+            location = self.search(location, lang=lang, method=method)
+            return self.__get_location_details(location)
 
         return location_data
 
-    @staticmethod
-    @check_loaded_data(cities=True, cities_details=True, on_error_value=[])
-    def get_location_aliases(location):
+    @load_details
+    def get_location_aliases(self, location, predict=False):
         """
         returns the other aliases of a location
+        Note: It predicts the location if no exact match was found.
         """
-        location_data = LocationParser.get_location_details(location)
+        location_data = self.get_location_details(location, predict)
+        if not location_data:
+            return []
 
         # combine the aliases
         res = []
@@ -177,12 +263,15 @@ class LocationParser:
             res += non_latin
 
         # return unique aliases
-        return list({r for r in res})
+        return list(set(res))
 
-    @staticmethod
-    @check_loaded_data(cities=True, cities_details=True, on_error_value=None)
-    def get_arabic_alias(location):
-        aliases = LocationParser.get_location_aliases(location)
+    @load_details
+    def get_arabic_alias(self, location, predict=False):
+        """
+        returns the arabic aliases of a location.  \n
+        Note: It predicts the location if no exact match was found.
+        """
+        aliases = self.get_location_aliases(location, predict)
         for alias in aliases:
             if re.search(ARABIC_REGEX, alias):
                 return alias
@@ -190,7 +279,64 @@ class LocationParser:
 
 
 if __name__ == '__main__':
-    # l = LocationParser.get_locations('Hello, I\'m from baabda where Aakkar el Aatiqa live in beirut and beirut')
-    # for x, f in l:
-    #     print(LocationParser.get_arabic_alias(x))
-    print(LocationParser.get_possible_locations('a', 'b'))
+    lf = LocationFinder()
+
+    # print(len(lf.get_locations_list()))
+    # print(len(lf.get_locations_list(lang='en')))
+    # print(len(lf.get_locations_list(lang='ar')))
+
+    # location = lf.search('beyrout', lang='en', method=Methods.SOUND)
+    # print(location)
+    # location = lf.search('البيروت', lang='ar')
+    # print(location)
+
+    # print(jellyfish.soundex('akka'))
+    # print(jellyfish.soundex('akkar'))
+    # print(fuzz.partial_ratio('aandkit', 'and'))
+    # print(fuzz.ratio('aandkit', 'and'))
+    # print(fuzz.partial_ratio('where', 'hereh'))
+    # print(fuzz.ratio('where', 'hereh'))
+    # print(fuzz.partial_ratio('akka', 'akkar'))
+    # print(fuzz.ratio('akka', 'akkar'))
+
+    # text = 'Hello, I\'m from baabda where Akka live in beirut and beyrut. من بيروت سلام للشويفات'
+    # locations = lf.search_text(text, method={'en': Methods.SOUND, 'ar': Methods.EDIT_DISTANCE})
+    # for l in locations:
+    #     print(l)
+
+    """
+    Edit-Distance Results:
+    ----------------------
+    ('baabda', 100)
+    ('beirut', 100)
+    ('بيروت', 100)
+    ('akkar', 94.5)
+    ('beyrouth', 84.5)
+    ('وطى سلام', 83.5)
+    ('hereh', 80.0)
+    ('aandkit', 80.0)
+    
+    Sound Results:
+    --------------
+    ('baabda', 100)
+    ('beirut', 100)
+    ('بيروت', 100)
+    ('beyrouth', 86)
+    ('سلم', 86)
+    
+    Mix: EN-Sound and AR-Edit-Distance:
+    -----------------------------------
+    ('baabda', 100)
+    ('beirut', 100)
+    ('بيروت', 100)
+    ('akkar', 94.5)
+    ('beyrouth', 86)
+    ('وطى سلام', 83.5)
+    """
+
+    partial_ratio = fuzz.partial_ratio("تل أخضر", "تل الأخضر")
+    ratio = fuzz.ratio("تل أخضر", "تل الأخضر")
+    print(partial_ratio)
+    print(ratio)
+    m = PredictionMethods("تل أخضر", "تل الأخضر")
+    print(m.get_ratio())

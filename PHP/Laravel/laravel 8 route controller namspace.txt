@@ -1,0 +1,13 @@
+function prefixNS($controllerAction)
+{
+    /**
+     * prefix the controller's action by the controllers namespace
+     *
+     * @param string $controllerAction
+     * @return string
+     */
+
+    return "App\\Http\\Controllers\\{$controllerAction}";
+}
+
+Route::get('/', prefixNS("HomeController@index"));

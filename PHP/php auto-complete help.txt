@@ -1,0 +1,7 @@
+Function Parameter Help
+-----------------------
+Add PHPDocs before the function and specify the @param and @return annotations
+
+Object/Instance Help
+--------------------
+Add /* @var <class-name> $instanceObj */ before the $instanceObj to get auto-complete options according to the specified type

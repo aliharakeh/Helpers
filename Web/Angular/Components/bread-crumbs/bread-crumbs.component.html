@@ -1,0 +1,12 @@
+<div class="flex justify-center items-center mt-2">
+  <ng-container *ngFor="let slug of slugs; let i = index">
+
+    <a
+      [routerLink]="getLink(i)"
+      class="no-underline text-xl text-indigo-400 font-semibold"
+    >{{ slug }}</a>
+
+    <mat-icon *ngIf="i < slugs.length - 1">arrow_forward_ios</mat-icon>
+
+  </ng-container>
+</div>

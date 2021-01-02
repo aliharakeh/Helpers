@@ -1,0 +1,10 @@
+Preview Uploaded Image:
+=======================
+    previewImage(file: File) {
+        this.imgFile = file;
+        const fr = new FileReader();
+        fr.onload = () => {
+            this.img = fr.result;
+        };
+        fr.readAsDataURL(file);
+    }

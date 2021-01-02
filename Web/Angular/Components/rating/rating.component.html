@@ -1,0 +1,7 @@
+<div class="flex gap-x-2">
+  <ng-container *ngFor="let num of [1, 2, 3, 4, 5]" [ngSwitch]="true">
+    <mat-icon class="text-yellow-500" *ngSwitchCase="rating >= num">star</mat-icon>
+    <mat-icon class="text-yellow-500" *ngSwitchCase="num > rating && rating > num - 1">star_half</mat-icon>
+    <mat-icon class="text-yellow-500" *ngSwitchDefault>star_border</mat-icon>
+  </ng-container>
+</div>

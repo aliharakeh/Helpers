@@ -1,0 +1,10 @@
+Upload Image:
+=============
+    data = {
+        'key1': <any>,
+        'image': <File>
+    }
+    const formData = new FormData();
+    for (const key in data) {
+        formData.append(key, data[key]);
+    }

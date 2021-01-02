@@ -1,43 +1,3 @@
-Preview Uploaded Image:
-=======================
-    previewImage(file: File) {
-        this.imgFile = file;
-        const fr = new FileReader();
-        fr.onload = () => {
-            this.img = fr.result;
-        };
-        fr.readAsDataURL(file);
-    }
-
-
-Upload Image:
-=============
-    data = {
-        'key1': <any>,
-        'image': <File>
-    }
-    const formData = new FormData();
-    for (const key in data) {
-        formData.append(key, data[key]);
-    }
-
-
-
-Route Parameters Observable:
-============================
-    <private route: ActivatedRoute>
-    -------------------------------
-    this.route.paramMap
-    .pipe(
-        switchMap((params: ParamMap) => {
-            return new Observable<any>(subscriber => subscriber.next(params.get('id')));
-        })
-    )
-    .subscribe(id => {
-        // code to do everytime id changes in url
-    });
-
-
 Usefull Observables - RXJS:
 ===========================
 
@@ -89,7 +49,7 @@ Usefull Observables - RXJS:
 
         2.2) catchError() operator:
         ===========================
-            allows you to catch an error in the observable and handle it you way
+            allows you to catch an error in the observable and handle it your way
 
             example:
             ========

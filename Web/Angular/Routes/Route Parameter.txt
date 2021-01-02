@@ -1,0 +1,7 @@
+constructor(private activatedRoute: ActivatedRoute) { }
+
+ngOnInit() {
+  this.activatedRoute.paramMap.subscribe((params: ParamMap) => {
+     this.id = params.get('id');
+  });
+}

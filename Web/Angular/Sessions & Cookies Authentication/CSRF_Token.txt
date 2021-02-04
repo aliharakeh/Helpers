@@ -1,0 +1,76 @@
+Relative URLs
+-------------
+
+    Description
+    -----------
+        - Use this method when your urls are relative to the server. ex: /login, /somewhere
+        - Http methods like [Get] & [Header] do not include XSRF/CSRF Token as they don't really require it
+        - Absolute URLs like [http://...] & [https://...] also do not include XSRF/CSRF Token as they are considered API calls
+
+    app.module.ts
+    -------------
+        import {HttpClientXsrfModule} from "@angular/common/http";
+
+        @NgModule({
+            imports: [
+                ...
+                HttpClientModule,
+                HttpClientXsrfModule,
+                ...
+            ],
+            providers: [
+                CookieService,
+                {provide: HTTP_INTERCEPTORS, useClass: XsrfInterceptor, multi: true}
+            ],
+            bootstrap: [AppComponent]
+        })
+
+
+Absolute URLs:
+-------------
+
+    Description
+    -----------
+        - Use when your urls are absolute. ex: http://..., https://...
+        - Can be customized as you want
+
+
+    app.module.ts
+    -------------
+
+        External Cookie Management Service
+        ----------------------------------
+            import {CookieService} from 'ngx-cookie-service'; // 
+    
+
+        Custom Interceptor to add XSRF/CSRF Token
+        -----------------------------------------
+            @Injectable()
+                export class XsrfInterceptor implements HttpInterceptor {
+                
+                constructor(private cookieService: CookieService) {
+                }
+
+                intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+                    let requestToForward = req;
+                    
+                    if (this.cookieService.check('XSRF-TOKEN')) {
+                        requestToForward = req.clone({
+                            setHeaders: {
+                                "X-XSRF-TOKEN": this.cookieService.get('XSRF-TOKEN')
+                            }
+                        });
+                    }
+
+                    // you can also add the `withCredentials=true` option to send cookies to server
+
+                    return next.handle(requestToForward);
+                }
+            }
+
+        Providers
+        ---------
+            providers: [
+                CookieService,
+                {provide: HTTP_INTERCEPTORS, useClass: XsrfInterceptor, multi: true}
+            ],

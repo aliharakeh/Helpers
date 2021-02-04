@@ -6,3 +6,8 @@ Route::get('/specific', [SpecificController::class, 'index'])->name('specific');
 
 // last route - any route
 Route::get('/{any}', [HomeController::class, 'index'])->where('any', '.*');
+
+// all routes excepts those with /api prefix
+Route::any('/{all}', function () {
+    return view('index');
+})->where('all', '^(?!api).*$');

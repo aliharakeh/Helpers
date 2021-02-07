@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {environment} from "../../../environments/environment";
+import {environment} from '../../../environments/environment';
+import {IServerResponse, ServerResponse} from '../models/response.model'; // found in Helpers/Web/Angular/Models
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +15,46 @@ export class HttpService {
   constructor(private http: HttpClient) {
   }
 
-  get(route: string, ...params): Observable<any> {
-    const urlData = !params ? '' :  `/${params.join('/')}`;
-    return this.http.get<any>(`${this.BASE_URL}/${route}${urlData}`);
+  get(route: string, ...params): Observable<ServerResponse> {
+    return this.callHttpMethod(this.http.get, this.buildUrl(route, params));
   }
 
-  post(route: string, data): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/${route}`, data);
+  post(route: string, data): Observable<ServerResponse> {
+    return this.callHttpMethod(this.http.post, this.buildUrl(route), data);
+  }
+
+  put(route: string, data): Observable<ServerResponse> {
+    return this.callHttpMethod(this.http.put, this.buildUrl(route), data);
+  }
+
+  patch(route: string, data): Observable<ServerResponse> {
+    return this.callHttpMethod(this.http.patch, this.buildUrl(route), data);
+  }
+
+  delete(route: string, ...params): Observable<ServerResponse> {
+    return this.callHttpMethod(this.http.delete, this.buildUrl(route, params));
+  }
+
+  formData(route: string, data): Observable<ServerResponse> {
+    let formData = new FormData();
+    for (let key in data)
+      formData.append(key, data[key]);
+    return this.post(route, formData);
+  }
+
+  private callHttpMethod(httpMethod, url: string, data?: {}): Observable<ServerResponse> {
+    const params: any = [url];
+    if (data) params.push(data);
+    // bind the function to its owner for correct `this` reference
+    httpMethod = httpMethod.bind(this.http)
+    const response: Observable<IServerResponse> = httpMethod(...params);
+    return response.pipe(map((res: IServerResponse) => new ServerResponse(res)));
+  }
+
+  private buildUrl(route: string, params = []): string {
+    const url = `${this.BASE_URL}/${route}`;
+    if (params.length !== 0)
+      return url + '/' + params.join('/');
+    return url;
   }
 }

@@ -1,0 +1,35 @@
+Angular Modules:
+----------------
+    declarations:
+    ------------
+        - components/directives/pipes that we want to export (to be used in other components - called public components/directives/pipes)
+        - sub-components
+		- any components/directives/pipes should be declared somewhere once
+
+    imports:
+    --------
+        - modules that export components/directives/pipes which you need in your current module
+        - modules that provide some services you need in your current module
+
+    provider:
+    ---------
+        - services
+        - interceptors
+        - injectors & injectors' Tokens
+
+    exports:
+    --------
+        - components/directives/pipes that we want to export (to be used in other components - called public components/directives/pipes)
+        - modules that we imported and want to re-export them (to group them in one module or for whatever other reason)
+
+    bootstraps:
+    -----------
+        - components that are the root of the components tree (an app usually has 1 components tree but there can be more - idk why though, yet!)
+
+
+    Extra:
+    ------
+        - you can group components/modules with declarations/imports and then export/re-export them as a group (Shared NgModule)
+        - you can declare components and sub-components then just export the root component (only root component is public - Domain NgModule)
+        - you can just import modules that exports components you need in your component when your component is served by the router module 
+          (no need for declarations or exports - Routed NgModule)

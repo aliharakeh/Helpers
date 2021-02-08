@@ -2,29 +2,76 @@ Angular Modules:
 ----------------
     declarations:
     ------------
-        - components/directives/pipes that we want to export (to be used in other components - called public components/directives/pipes)
-        - sub-components
-		- any components/directives/pipes should be declared somewhere once
+		Used When:
+		----------
+			- you need to tell angular that you created something 
+			- it's like saying "yo angular, check this sexy component that I made"
+			
+		
+		Used For:
+		---------
+			- components/directives/pipes that we want to export (to be used in other components - called public components/directives/pipes)
+			- sub-components
+			- any components/directives/pipes should be declared somewhere once
+		
 
     imports:
     --------
-        - modules that export components/directives/pipes which you need in your current module
-        - modules that provide some services you need in your current module
+		Used When:
+		----------
+			- you need external dependencies
+			- you are too lazy like me and use external libraries
+			- you are a neat freak and can't bare having too many stuff in your module so you group them by their category and then group them even more
+			
+			
+		Used For:
+		---------
+			- modules that export components/directives/pipes which you need in your current module
+			- modules that provide some services you need in your current module
+		
 
-    provider:
-    ---------
-        - services
-        - interceptors
-        - injectors & injectors' Tokens
+    providers:
+    ----------
+		Used When:
+		----------
+			- want to provide a service through this module
+			- service lifetime depends on module's lifetime
+			- a service that is only availble when you load this module
+			- you want to have more stuff in your module than other modules just so you can feel more superior (pretty sad indeed)
+		
+		
+		Used For:
+		---------
+			- services
+			- interceptors
+			- injectors & injectors' Tokens
+		
 
     exports:
     --------
-        - components/directives/pipes that we want to export (to be used in other components - called public components/directives/pipes)
-        - modules that we imported and want to re-export them (to group them in one module or for whatever other reason)
+		Used When:
+		----------
+			- you want to share your stuff with the world
+			- you are a good person who beleives in the "sharing is caring" quote (i.e: The Big Hearted Guy/Girl/Apache Helicopter)
+		
+		
+		Used For:
+		---------
+			- components/directives/pipes that we want to export (to be used in other components - called public components/directives/pipes)
+			- modules that we imported and want to re-export them (to group them in one module or for whatever other reason)
+		
 
     bootstraps:
     -----------
-        - components that are the root of the components tree (an app usually has 1 components tree but there can be more - idk why though, yet!)
+		Used When:
+		----------
+			- you want to... it just exists
+			- don't use bootrap.css, tailwind.css is better :)
+			
+		
+		Used For:
+		---------
+			- components that are the root of the components tree (an app usually has 1 components tree but there can be more - idk why though, yet!)
 
 
     Extra:

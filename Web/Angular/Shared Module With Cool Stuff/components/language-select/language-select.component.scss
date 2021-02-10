@@ -1,0 +1,42 @@
+.dropdown {
+  @apply relative inline-block;
+
+  .drop-btn {
+    @apply text-lg font-semibold text-gray-900
+    py-2 px-4
+    border-0 rounded-full
+    cursor-pointer;
+
+    &:focus {
+      @apply outline-none;
+    }
+  }
+
+  .dropdown-content {
+    @apply hidden
+    absolute
+    left-5
+    z-10;
+
+    div {
+      @apply flex justify-center items-center
+      px-4 py-2
+      my-1
+      bg-indigo-600 text-white
+      rounded-full
+      cursor-pointer;
+
+      &:hover {
+        @apply bg-gray-200 text-gray-900;
+      }
+    }
+  }
+
+  &:hover .dropdown-content {
+    @apply block;
+  }
+
+  &:hover .drop-btn {
+    @apply bg-gray-200;
+  }
+}

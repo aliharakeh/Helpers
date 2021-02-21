@@ -1,0 +1,76 @@
+1) `PreloadingStrategy` Pre Load Strategy:
+------------------------------------------
+
+    What I know:
+    ------------
+        - the strategy applies to all direct & sub routes recursively.
+        - it's an injectable (technically a service).
+        - you must implement the `PreloadingStrategy` interface.
+        - you can customize it by using the routes `data` field
+        - to load you use the provided `load` function in the `preload` method parameters
+
+
+    Example:
+    -------
+
+        Description:
+        ------------
+            - don't preload any route that has the `noPreLoad` = true
+
+        Code:
+        -----
+            class CustomPreloadingStrategy implements PreloadingStrategy {
+                
+                preload(route: Route, load: Function): Observable<any> {
+                    
+                    // stop pre-loading only if route.data.noPreLoad === true, otherwise load all routes
+                    return route.data && route.data.noPreLoad ? of(null) : load();
+                }
+            }
+
+
+2) `canLoad` Guard:
+-------------------
+    What I know:
+    ------------
+        - it's a guard method used for authentication purposes. (i.e for users who can't load specific routes)
+        - another way to tell the route module what routes to load.
+        - it's an injectable (technically a service).
+        - you must implement the `CanLoad` interface.
+        - you can customize it by using the routes `data` field
+
+    
+    Example:
+    --------
+
+        Guard:
+        ------
+            @Injectable({
+                providedIn: 'root'
+            })
+            export class AuthGuard implements CanLoad {
+
+                constructor(private auth: AuthService) {}
+
+                canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+                    const user: User = this.auth.user;
+                    return user.userRole === route.data.role;
+                }
+            }
+
+        Routes:
+        -------
+            const routes: [
+                {
+                    path: '/admin',
+                    loadChildren: () => import('./admin.module').then(m => m.AdminModule),
+                    data: { role: 'Admin' },
+                    canLoad: [AuthGuard]
+                },
+                {
+                    path: '/guest',
+                    loadChildren: () => import('./admin.module').then(m => m.AdminModule),
+                    data: { role: 'Guest' },
+                    canLoad: [AuthGuard]
+                }
+            ]

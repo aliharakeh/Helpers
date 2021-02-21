@@ -19,15 +19,19 @@ Angular Modules:
     --------
 		Used When:
 		----------
-			- you need external dependencies
-			- you are too lazy like me and use external libraries
+			- to tell angular what modules to include in the final build, even if there is not export in these modules 
+			  (you just need their declarations content which is private to them and only accessed through a top level component
+			  by a route) 
+			- you need external dependencies as you are too lazy like me and use external libraries
 			- you are a neat freak and can't bare having too many stuff in your module so you group them by their category and then group them even more
 			
 			
 		Used For:
 		---------
+			- modules that you want to include in the final all-module-merge of your angular app
 			- modules that export components/directives/pipes which you need in your current module
 			- modules that provide some services you need in your current module
+			
 		
 
     providers:
@@ -36,7 +40,7 @@ Angular Modules:
 		----------
 			- want to provide a service through this module
 			- service lifetime depends on module's lifetime
-			- a service that is only availble when you load this module
+			- a service that is only available when you load this module
 			- you want to have more stuff in your module than other modules just so you can feel more superior (pretty sad indeed)
 		
 		

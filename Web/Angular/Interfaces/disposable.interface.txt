@@ -1,0 +1,1 @@
+implement this interface in ur provide a service with a dispose method to clear its data

@@ -1,9 +1,11 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {environment} from '../../../environments/environment';
-import {IServerResponse, ServerResponse} from '../models/response.model'; // found in Helpers/Web/Angular/Models
-import {map} from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { ServerResponse } from '../models/response.model';
+import { HttpErrorsService } from './http-errors.service';
+import { UtilsService } from './utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +14,7 @@ export class HttpService {
 
   private BASE_URL = environment.serverURL;
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient, private httpErrors: HttpErrorsService, private utils: UtilsService) {}
 
   get(route: string, ...params): Observable<ServerResponse> {
     return this.callHttpMethod(this.http.get, this.buildUrl(route, params));
@@ -37,18 +38,32 @@ export class HttpService {
 
   formData(route: string, data): Observable<ServerResponse> {
     let formData = new FormData();
-    for (let key in data)
+    for (let key in data) {
       formData.append(key, data[key]);
+    }
     return this.post(route, formData);
   }
 
   private callHttpMethod(httpMethod, url: string, data?: {}): Observable<ServerResponse> {
     const params: any = [url];
     if (data) params.push(data);
+
     // bind the function to its owner for correct `this` reference
-    httpMethod = httpMethod.bind(this.http)
-    const response: Observable<IServerResponse> = httpMethod(...params);
-    return response.pipe(map((res: IServerResponse) => new ServerResponse(res)));
+    httpMethod = httpMethod.bind(this.http);
+    const response: Observable<any> = httpMethod(...params);
+
+    return response.pipe(
+      map((res: any) => {
+        let serverResponse;
+        if (!res)
+          return new ServerResponse({});
+        else
+          serverResponse = new ServerResponse(res);
+        this.utils.debug('Server Response', serverResponse);
+        return serverResponse;
+      }),
+      catchError(this.httpErrors.handleError)
+    );
   }
 
   private buildUrl(route: string, params = []): string {

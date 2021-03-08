@@ -1,0 +1,65 @@
+<mat-card *ngIf="subjectsService.subjects.length > 0">
+  <div class="p-8">
+    <div
+      cdkDropListGroup
+      class="flex flex-wrap justify-center gap-x-10 gap-y-14 mb-5"
+    >
+      <div
+        class="w-1/4"
+        *ngFor="let subject of subjectsService.editedSubjects; let i = index"
+        cdkDropList
+        [cdkDropListData]="i"
+      > <!-- cdkDropListOrientation="horizontal" -->
+        <div
+          cdkDrag
+          (cdkDragEntered)="entered($event)"
+          (cdkDragEnded)="ended($event)"
+          [cdkDragData]="i"
+          class="cursor-move"
+        >
+          <div class="border-2 border-dashed bg-gray-200 w-full h-full" *cdkDragPlaceholder></div>
+          <app-subject
+            [index]="i + 1"
+            [subject]="subject"
+            (delete)="delete(subject)"
+            (update)="update()"
+          ></app-subject>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</mat-card>
+
+
+private lastFrom: number;
+  private lastTo: number;
+
+constructor(private cd: ChangeDetectorRef) { }
+
+entered(e: CdkDragEnter) {
+    if (this.subjectsService.editedSubjects && this.subjectsService.editedSubjects.length === 1) {
+      return;
+    }
+
+    this.lastFrom = e.item.data;
+    this.lastTo = e.container.data;
+
+    this.utils.debug('entered', e);
+    // moveItemInArray(this.subjectsService.editedSubjects, this.lastTo, this.lastFrom);
+    // this.cd.detectChanges();
+  }
+
+  ended(e: CdkDragEnd) {
+    this.utils.debug('ended', e);
+
+    if (this.subjectsService.editedSubjects && this.subjectsService.editedSubjects.length === 1) {
+      return;
+    }
+    if (this.lastFrom === undefined || this.lastTo === undefined) {
+      return;
+    }
+    moveItemInArray(this.subjectsService.editedSubjects, this.lastFrom, this.lastTo);
+    this.cd.detectChanges();
+    this.changed = true;
+  }

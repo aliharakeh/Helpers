@@ -33,7 +33,7 @@
 
 
 private lastFrom: number;
-  private lastTo: number;
+private lastTo: number;
 
 constructor(private cd: ChangeDetectorRef) { }
 

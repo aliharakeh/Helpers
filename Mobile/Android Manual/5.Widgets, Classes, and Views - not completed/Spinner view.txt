@@ -1,0 +1,25 @@
+- It's a select option list.
+
+- Uses and ArrayAdapter to fill its content.
+
+- Uses the OnItemSelectedListener for the item select event.
+
+- Syntax:
+         Spinner spinner = (Spinner) findViewById(R.id.spinner_id);
+         String[] content = {"item_0", "item_1", "item_2", "item_3", "item_4", "item_5", "item_6"};
+         // Not necessary a string[], you can use other container like an ArrayList
+         // and it's not necessary also to be a string it can a float/double/int/..
+         // since the 3rd parameter in the adapeter here is of type object[].
+         ArrayAdapter adapter = new ArrayAdapter(this, R.Layout.simple_spinner_dropdown, content);
+         spinner.setAdapter(adapter);
+         spinner.setOnItemSelectedListener(new OnItemSelectedListener{
+                 @Override
+                 public void onItemSelected(..){
+                          // code here.
+                 }
+                 @Override
+                 public void onNothingSelected(..){
+                          // code here.
+                 }
+         });
+                 

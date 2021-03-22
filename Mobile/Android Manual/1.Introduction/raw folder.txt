@@ -1,0 +1,7 @@
+- This folder contains all the .mp3 sound files that your app uses.
+
+- If it is not visible then create it by adding a new resource folder in 'res' specifying it as a raw resource folder.
+
+- To add a file to it either copy the file and then right click on the folder and choose paste.
+
+- Or right click on the folder and choose show in explorer and add the file there.

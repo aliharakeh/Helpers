@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- start with item tag and and specify the state(optional) -->
+    <item android:state_pressed="false">
+        <!-- choose your shape (rectangle, oval, line, ring) -->
+        <shape android:shape="oval">
+            <!-- use gradient command to configure your item's style -->
+            <!-- the angle attibute is fopr the linear type, range(0->315), chosen nb must be divisible by 45 -->
+            <!-- left_side_color = end color, center = center color, right_side_color = start color -->
+            <gradient
+                android:angle="135"
+                android:centerColor="#4CAF50"
+                android:endColor="#2E7D32"
+                android:startColor="#81C784"
+                android:type="linear" />
+            <!-- choose your shape's size, it's a circle here so same h & w -->
+            <size
+                android:width="320dp"
+                android:height="320dp"
+                />
+        </shape>
+    </item>
+    <!-- configure the other state of the item (optional)-->
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="135"
+                android:centerColor="#4c68af"
+                android:endColor="#2e527d"
+                android:startColor="#819ec7"
+                android:type="linear" />
+            <size
+                android:width="320dp"
+                android:height="320dp"
+                />
+        </shape>
+    </item>
+
+</selector>

@@ -1,0 +1,7 @@
+- Include any anim file in the project/src/res/values/anim foleder in your app to use it.
+
+- To include just copy paste the file in the path above.
+
+- There is no need to explain each file because they are not complicated.
+
+- If you want to know what each command line do just use (ctrl + space) to see the documentation. 

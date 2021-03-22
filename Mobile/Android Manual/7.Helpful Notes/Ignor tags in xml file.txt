@@ -1,0 +1,5 @@
+<![CDATA[
+
+// text that contains tags in here like html tags or just normal tags
+
+]]>

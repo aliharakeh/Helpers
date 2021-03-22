@@ -1,0 +1,14 @@
+- Class A:
+
+          Intent i = new Intent(this, B.class);
+          i.putExtra("Int_key", 123); // the value of the key can be any type
+          i.putExtra("String_key", "value"); 
+          startActivity(i);
+
+- Class B:
+
+          Bundle data = getIntent().gegtExtras(); // get the extras from the intent sent from A
+          if(data){
+          String s = data.getString("String_key");
+          int x = data.getString("Int_key");
+          }

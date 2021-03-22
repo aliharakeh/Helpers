@@ -1,0 +1,20 @@
+- It's a relationship saving method where each saved data has a key to access it.
+
+- Usually used to save settings of the user.
+
+- Code:
+
+	// open the SharedPreferences file or create a new one
+	final SharedPreferences sharedPreferences = getSharedPreferences("file", Context.MODE_PRIVATE);
+	// use the .Editor to edit it
+	SharedPreferences.Editor editor = sharedPreferences.edit();
+	// put what u want in it and save the changes by the commit() function
+	editor.putString("String_key","String");
+	editor.putInt("int_key",123);
+	editor.putFloat("float_key",100.6f);
+	editor.commit();
+
+	// link to the value by it's key and put a default value in case the key is not found
+	sharedPreferences.getString("String_key","default value");
+	sharedPreferences.getInt("int_key",0);
+	sharedPreferences.getFloat("float_key",0.0f);

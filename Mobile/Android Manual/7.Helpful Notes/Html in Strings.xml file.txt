@@ -1,0 +1,27 @@
+1.
+ <string name="html_text">
+
+        <b>heloooooooooooooooooooooo</b>
+        <br>
+        </br>
+        <u>welcome t5o andfjhfguyyg</u>
+        <font size="30" fgcolor='#ffff0000'> // fgcolor to change text color (here is red)
+            Iam adskdfasfsjmasf              // use ARGB style 8 bits
+        </font>                              // 1st 2 bits for A and then each RGB also 2 bits
+                                             // A controls the transperacy of the color.
+    </string>                                
+
+
+2.
+  <string name="html_text2">
+
+  <![CDATA[
+
+      // only html tags that formats the text like font color, b, i, u, etc ...
+
+  ]]>
+
+  </string>
+
+
+- Use the function HTML.fromHTML(#) to apply the html tags in text. (not necessary)

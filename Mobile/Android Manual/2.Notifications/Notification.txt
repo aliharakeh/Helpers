@@ -1,0 +1,20 @@
+- It's the normal notification you get from messages or any app that will show at the bar where the clock and battery value is.
+
+
+- Code:
+
+Intent intent = new Intent(this, MainActivity.class);
+PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); // kinda like a schedule intent
+NotificationCompat.Builder n_builder = new NotificationCompat.Builder(this);
+            n_builder.setAutoCancel(true)
+                     .setDefaults(Notification.DEFAULT_ALL) // sound, led(light), vibrate.
+                     .setSmallIcon(R.drawable.ic_stat_name) //necessary or notification will not show.
+                     .setTicker("what shows at first at the toolbar")
+                     .setContentTitle("title of the notification")
+                     .setContentText("content of the notification")
+                     .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND) // (| = bitwise or).
+                     .setContentIntent(pendingIntent); // when u click on it u will go to the app.
+NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+notificationManager.notify(/*id = */0, n_builder.build());
+
+- The intent in not necessary usually.

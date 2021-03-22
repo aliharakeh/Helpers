@@ -1,0 +1,37 @@
+<resources>
+
+    <!-- Base application theme. -->
+
+    <!-- using a parent theme saves some work -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+
+        <!-- Customize your theme here. -->
+         
+        <!-- toolbar color -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+
+        <!-- border color when draging a view from the toolbox to layout --> 
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+
+        <!-- the color of the view (ex: check color of radio button, line color of editText, etc... -->
+        <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+
+
+    <!-- theme for action bar -->
+    <style name="AppTheme.NoActionBar">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+    </style>
+
+    
+    <!-- theme for appbar -->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    
+    <!-- theme for popout -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

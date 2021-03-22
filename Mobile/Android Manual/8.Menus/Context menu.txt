@@ -1,0 +1,24 @@
+- It's an option menu that comes out after long pressing on a view like a button or a textview.
+
+- Code:
+
+    //set the view that you want to apply the context menu to.
+    registerForContextMenu(contextMenu_btn);
+
+    // create a context menu with a title and 3 items.
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Context menu");
+        menu.add(0,v.getId(),0,"item1"); // 1st '0' is the group id, 2nd '0' is the position in the group.
+        menu.add(0,v.getId(),0,"item2");
+        menu.add(0,v.getId(),0,"item3");
+    }
+
+    // sets the action when you click an item.
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        // show the title/label of the item selected.
+        Toast.makeText(this,"you choose " + item.getTitle(),Toast.LENGTH_SHORT).show();
+        return true;
+    }

@@ -1,0 +1,22 @@
+- This is where you congigure your fragment content and layout.
+
+- Code:
+	public class Fragment_1 extends Fragment {
+
+	    // Empty constructor.. very necessary.
+	    public Fragment_1_code(){}
+	
+	    @Override
+	    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+	        
+		// Link the fragment to a layout.
+		View view = inflater.inflate(R.layout.fragment_1,container,false);
+		
+		// Configure it's content using it as a source.
+	        TextView txt = (TextView) view.findViewById(R.id.textView);
+	        txt.setText("Fragment 1");
+		
+		// Return it.
+	        return view;
+	    }
+	}

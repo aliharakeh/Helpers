@@ -1,0 +1,46 @@
+1st_textview:
+*************
+- Android is the development of apps on phone.
+
+- It uses JAVA programming language as a base for the coding, and the XML language for the design.
+
+- To link the java file with the xml file we use the setContentView(R.Layout.#) in the OnCreate() function.
+
+- Every component (called view) you use in your design can be linked to an object in the java code.
+
+- To link we use the findViewById(R.id.#) function which takes an int as a parameter.
+
+- The 'R' is the java file that is generated automatically by the pc and it contains all the resources of the app.
+
+- 'R' contains manny inner classes whith each classs representing a file in the 'res' folder.
+
+- ex:
+     Button b = (Button) findViewById(R.id.button);
+
+- Casting to the needed object is necessary always and don't forget to give the view an Id ('button' here).
+
+- Each android Activity (window) has a Life Cycle which organize the avtivity actions and so on.
+  See the below pic:
+
+imageview:
+**********
+
+
+
+2nd_textview below pic:
+***********************
+- OnCreate(): your code goes here, it's the default function.
+
+- OnStart(): this function is called after OnCreate().
+
+- OnResume(): this function is called after OnStart() or OnPause.
+
+- OnPause(): this function is called when the activity is not visible anymore and in the background.
+
+- OnStop(): this function is called when the activity is exited.
+
+- OnDestroy(): this function is called when activity is killed in the RAM.
+
+- Remember to always put 'super.OnCreat()' at first before writing any code in any of the functions. 
+                               .OnStart()
+                               .etc

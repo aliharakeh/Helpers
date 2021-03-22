@@ -1,0 +1,3 @@
+- This folder contains app icon.
+
+- To change the icon, right click on the folder and choose new immage assest and enter a new one.

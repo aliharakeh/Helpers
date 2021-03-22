@@ -1,0 +1,17 @@
+- It's used to move between the activities of the app and to send data between them.
+
+- Each intent has 3 properites: - action.
+                                - category.
+                                - data.
+
+- To use an intent means that we have 2 or more activities and each one of them is linked to its own layout.xml file.
+
+- Code:
+
+         Intent i = new Intent(this, destination_activity_name.class);
+         startActivity(i); // this starts the intent.
+
+- And don't forget to declare your activity in the manifests.xml as follows:
+
+         <activity android:name = ".activity_name" />
+         

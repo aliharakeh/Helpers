@@ -1,0 +1,32 @@
+- Setting menu on the right side of the toolbar which u can configure(the 3 vertical dots).
+
+- If u need to add an item to a group in the menu.xml file then cut and paste it inside the group, same for a nested menu.
+
+- Code:
+
+    Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar); // appbar and a toolbar.
+    setSupportActionBar(toolbar);
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.#, menu); // a #.xml file from the menu resource folder
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        // get the id of the item selected.
+        int id = item.getItemId();
+
+        //code for each item.
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }

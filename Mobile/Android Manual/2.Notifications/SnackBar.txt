@@ -1,0 +1,23 @@
+- It's similar to Toast but it's position is fixed at the button where a bar will show up.
+
+- Code:
+
+1.
+Snackbar.make(constraintLayout,"this is a snack bar",Snackbar.LENGTH_SHORT).setAction(...).show();
+
+2.
+Snackbar snackbar = Snackbar.make(constraintLayout,"this is a snack bar",Snackbar.LENGTH_SHORT);
+snackbar.setAction("Click me", new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+               Snackbar.make(constraintLayout,"Clicked!!!",Snackbar.LENGTH_SHORT).show();
+        }
+});
+
+// change background an text color ...... VERY VERY VERY IMPORTANT!!!!!!!!!
+snackbar.setActionTextColor(Color.RED);
+View snack_barView = snackbar.getView();
+snack_barView.setBackgroundColor(Color.WHITE);
+TextView textView = (TextView)snack_barView.findViewById(android.support.design.R.id.snackbar_text);
+textView.setTextColor(Color.BLACK);
+snackbar.show();

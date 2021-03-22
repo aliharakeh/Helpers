@@ -1,0 +1,38 @@
+- Plays #.mp3 file.
+
+- It's prefered to declare it a global class variable, and to use the MediaPlayer.create() method
+  together with the start() funcrion since if they are not and the stop() method was called the
+  start() method won't play the sound file again.
+
+- Syntax:
+         MediaPlayer media_play = MediaPlayer(this, R.raw.mp3_name);
+         media_play.start();
+                   .stop();
+                   .pause();
+                   .etc..
+
+- You can let the user select a sound file from the device by the following code.
+
+- Code:
+       // send and intent to let the user search for a sound file in the device.
+       Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("audio/*"); // specifying the data type to get.
+                setResult(RESULT_OK);
+                startActivityForResult(intent, 0); // '0' is the request id you give to the intent.
+      
+      // receive the data and start playing the sound file
+      @Override
+      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // make sure you are receving the correct intent. 
+        if(resultCode == RESULT_OK && requestCode == 0){
+            if(mediaPlayer.isPlaying())
+                mediaPlayer.stop();
+            try{
+                mediaPlayer = MediaPlayer.create(context, Uri.parse(data.getDataString()));
+                mediaPlayer.start();
+            }
+            catch (Exception e){
+                Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }

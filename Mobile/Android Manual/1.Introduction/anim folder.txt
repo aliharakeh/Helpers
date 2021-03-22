@@ -1,0 +1,5 @@
+- This folder contains all the .xml animation files that your app uses.
+
+- If it is not visible then create it by adding a new resource folder in 'res' specifying it as anim resource folder.
+
+- To add a file, right click on the folder and choose new anim xml file.

@@ -1,0 +1,63 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { NgModule } from '@angular/core';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { DomSanitizer } from '@angular/platform-browser';
+import { UtilsService } from './shared/services/utils.service';
+
+@NgModule({
+  exports: [
+    MatSidenavModule,
+    MatListModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSelectModule,
+    MatSortModule,
+    MatDialogModule,
+    MatCardModule,
+    MatBadgeModule,
+    MatProgressSpinnerModule,
+    DragDropModule,
+    MatCheckboxModule
+  ]
+})
+
+export class AppMaterialModule {
+
+  private svgIcons = [
+    { label: 'graduation-cap', path: this.utils.getResource('extra-icons/graduation-cap-solid.svg')},
+    { label: 'graduation-user', path: this.utils.getResource('extra-icons/user-graduate-solid.svg') },
+    { label: '', path: '' },
+    { label: '', path: '' },
+    { label: '', path: '' }
+  ];
+
+  constructor(private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer, private utils: UtilsService) {
+    for (let svgIcon of this.svgIcons) {
+      this.registerSvgIcon(svgIcon.label, svgIcon.path);
+    }
+  }
+
+  registerSvgIcon(label, path) {
+    this.matIconRegistry.addSvgIcon(label, this.domSanitizer.bypassSecurityTrustResourceUrl(path));
+  }
+}

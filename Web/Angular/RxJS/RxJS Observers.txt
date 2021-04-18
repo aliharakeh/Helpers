@@ -89,6 +89,18 @@ Usefull Observables - RXJS:
                     })
                 )
                 .subscribe(...)
+		
+		2.5 take() operator and it's siblings:
+		======================================
+			takes a fixed number of obsevable values then unsubscribe after it completes the excution.
+			
+			example:
+			========
+			observable
+				.pipe(
+					take(1)
+				)
+				.subscribe(...)
 
         
 

@@ -26,7 +26,6 @@ export class SubjectStore {
     return this.behaviorSubject$.value;
   }
 
-
   /*
    adds a pipe operator
 
@@ -53,7 +52,7 @@ export class SubjectStore {
 
   // removes a pipe operator by order of addition
   removePipeOperator(index: number) {
-    this.operators = this.operators.splice(index, 1);
+    this.operators.splice(index, 1);
     this.newOperator$.next(true);
   }
 
@@ -90,6 +89,7 @@ export class SubjectStore {
     this.behaviorSubject$ = null;
     this.observable = null;
     this.operators = null;
+    this.newOperator$.complete();
     this.newOperator$ = null;
   }
 }
@@ -129,7 +129,8 @@ export class ArraySubject extends SubjectStore {
     let oldValueIndex;
     if (findBy) oldValueIndex = oldData.findIndex(findBy);
     else oldValueIndex = oldData.findIndex(item => JSON.stringify(item) === JSON.stringify(data));
-    this.setValue(oldData.splice(oldValueIndex, 1));
+    oldData.splice(oldValueIndex, 1)
+    this.setValue([...oldData]);
   }
 
   // filters array data until this operation is removed

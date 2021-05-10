@@ -1,12 +1,17 @@
 import { AbstractControlOptions, AsyncValidatorFn, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 
-export interface IAngularFormControl {
+export interface IAngularArrayFormControl {
+  0: any;
+  1?: string | (string | Function)[];
+}
+
+export interface IAngularObjectFormControl {
   initialState: any;
-  validators: string | (string | Function)[];
+  validators?: string | (string | ValidatorFn)[];
 }
 
 export interface IAngularFormControls {
-  [key: string]: IAngularFormControl;
+  [key: string]: IAngularArrayFormControl | IAngularObjectFormControl;
 }
 
 export interface IAngularFormValidators {
@@ -86,14 +91,16 @@ export class AngularFormValidators {
 }
 
 export class AngularFormControl extends FormControl {
-
-  constructor(angularFormControl: IAngularFormControl) {
-    super(angularFormControl.initialState, AngularFormValidators.parseValidators(angularFormControl.validators));
+  constructor(angularFormControl: IAngularArrayFormControl | IAngularObjectFormControl) {
+    const initialState = 'initialState' in angularFormControl ? angularFormControl.initialState : angularFormControl[0];
+    const validators = 'validators' in angularFormControl ? angularFormControl.validators : angularFormControl[1];
+    super(initialState, AngularFormValidators.parseValidators(validators || [])
+    );
   }
 
   hasErrors(errorKeys?: string[]): string[] {
     const invalid = this.invalid && (this.dirty || this.touched);
-    const errors = Object.keys(this.errors);
+    const errors = this.errors ? Object.keys(this.errors) : null;
     if (!invalid || !errors) return [];
     if (!errorKeys && errors) return errors;
     return Object.keys(errors).filter(err => errorKeys.includes(err));

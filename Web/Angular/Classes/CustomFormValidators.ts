@@ -36,7 +36,9 @@ export class CustomFormValidators {
         const date = this._getISODate(new Date(control.value));
         inRange = date >= _fromDate && date <= _toDate;
       }
-      catch (e) {}
+      catch (e) {
+        return null;
+      }
       return inRange ? null : {
         range: `Date value is not in range of [${_fromDate} - ${_toDate}]`
       };

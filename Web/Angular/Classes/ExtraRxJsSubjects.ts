@@ -94,23 +94,20 @@ export class SubjectStore {
   }
 }
 
-export class ArraySubject extends SubjectStore {
-  constructor(initialValue: any[] = []) {
+export class ArraySubject<T> extends SubjectStore {
+  constructor(initialValue: T[] = []) {
     super(initialValue);
   }
 
   // pushes an item into the array
-  push(data: any): void {
+  push(data: T): void {
     const oldData = this.getValue();
     this.setValue([...oldData, data]);
   }
 
   // updates an item in the array
-  update(data: any, findBy?: (item) => boolean): void {
-    const oldData = this.getValue();
-    let oldValueIndex;
-    if (findBy) oldValueIndex = oldData.findIndex(findBy);
-    else oldValueIndex = oldData.findIndex(item => JSON.stringify(item) === JSON.stringify(data));
+  update(data: T, findBy?: (item) => boolean): void {
+    let { oldData, oldValueIndex } = this._find(data, findBy);
     const newData = [...oldData];
     newData[oldValueIndex] = data;
     this.setValue(newData);
@@ -124,33 +121,38 @@ export class ArraySubject extends SubjectStore {
   }
 
   // removes an array item
-  remove(data: any, findBy?: (item) => boolean): void {
-    const oldData = this.getValue();
-    let oldValueIndex;
-    if (findBy) oldValueIndex = oldData.findIndex(findBy);
-    else oldValueIndex = oldData.findIndex(item => JSON.stringify(item) === JSON.stringify(data));
+  remove(data?: T, findBy?: (item) => boolean): void {
+    let { oldData, oldValueIndex } = this._find(data, findBy);
     oldData.splice(oldValueIndex, 1)
     this.setValue([...oldData]);
   }
 
   // filters array data until this operation is removed
   filter(filterBy: (item) => boolean) {
-    this.addPipeOperator(map((data: any[]) => data.filter(filterBy)));
+    this.addPipeOperator(map((data: T[]) => data.filter(filterBy)));
   }
 
   // maps array data until this operation is removed
   map(mapBy: (item) => any) {
-    this.addPipeOperator(map((data: any[]) => data.map(mapBy)));
+    this.addPipeOperator(map((data: T[]) => data.map(mapBy)));
   }
 
   // reduces array data until this operation is removed
   reduce(reduceBy: (item) => any, initValue) {
-    this.addPipeOperator(map((data: any[]) => data.reduce(reduceBy, initValue)));
+    this.addPipeOperator(map((data: T[]) => data.reduce(reduceBy, initValue)));
+  }
+
+  private _find(data: T, findBy: (item) => boolean) {
+    const oldData = this.getValue();
+    let oldValueIndex;
+    if (findBy) oldValueIndex = oldData.findIndex(findBy);
+    else oldValueIndex = oldData.findIndex(item => JSON.stringify(item) === JSON.stringify(data));
+    return { oldData, oldValueIndex };
   }
 }
 
-export class ObjectSubject extends SubjectStore {
-  constructor(initialValue: {} = {}) {
+export class ObjectSubject<T> extends SubjectStore {
+  constructor(initialValue: T | {} = {}) {
     super(initialValue);
   }
 
@@ -168,6 +170,12 @@ export class ObjectSubject extends SubjectStore {
     const oldData = this.getValue();
     if (oldData.hasOwnProperty(key)) delete oldData[key];
     this.setValue({ ...oldData });
+  }
+
+  // removes object properties (keeps old, add new ones, and updates old)
+  patch(data: object) {
+    const oldData = this.getValue();
+    this.setValue({ ...oldData, ...data });
   }
 }
 

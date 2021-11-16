@@ -1,0 +1,40 @@
+.box {
+    @apply p-4 border border-solid border-shade-3 rounded-lg opacity-80 outline-none box-border w-full;
+}
+
+input[type=checkbox] {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+ion-icon {
+    font-size: 21px;
+}
+
+.actions {
+    @apply border border-solid border-shade-3 rounded-md flex;
+}
+
+.action-dividers {
+    @apply border-0 border-r border-l border-solid border-shade-3;
+}
+
+.remove-image {
+    @apply absolute -top-1 -right-1
+    rounded-full
+    flex justify-center items-center
+    w-5 h-5
+    border-solid border-shade-3;
+}
+
+.badge {
+    position: relative;
+    top: -0.8rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    font-size: 0.6em;
+    --padding-start: 5px;
+    --padding-end: 5px;
+    border-radius: 50%;
+    z-index: 10;
+}

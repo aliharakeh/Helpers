@@ -1,0 +1,14 @@
+:host {
+    @apply w-full box-border;
+}
+
+.box {
+    @apply flex items-center justify-between
+    border border-solid border-shade-3 rounded-lg
+    text-lg text-center text-theme
+    box-border;
+
+    input {
+        @apply border-0 outline-none w-3/4;
+    }
+}

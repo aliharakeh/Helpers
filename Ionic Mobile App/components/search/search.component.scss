@@ -1,0 +1,12 @@
+:host {
+    @apply w-full;
+}
+
+.search-input-container {
+    @apply px-4 py-1 border border-solid border-shade-3 rounded-lg text-lg flex items-center;
+
+    ion-icon {
+        font-size: 24px;
+        @apply text-shade-5 mr-2;
+    }
+}

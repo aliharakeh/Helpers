@@ -1,0 +1,8 @@
+.handle {
+    @apply h-1 w-1/12 rounded-full my-3;
+    background-color: #E8E8E8;
+}
+
+ion-header::after {
+    display: none;
+}

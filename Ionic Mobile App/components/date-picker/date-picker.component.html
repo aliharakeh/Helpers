@@ -1,0 +1,23 @@
+<div class="box {{ cssClasses }}" [ngClass]="{ 'bg-shade-1 ': readonly }">
+    <input
+        readonly
+        class="bg-transparent"
+        (click)="!readonly && datePicker.open()"
+        [value]="utils.getFormattedDate(date)"
+    />
+    <ion-icon src="assets/svg/ic_event.svg"></ion-icon>
+</div>
+
+<ion-datetime
+    hidden
+    #datePicker
+    [value]="date ? date.toISOString() : undefined"
+    [displayFormat]="displayFormat"
+    [monthNames]="monthNames"
+    [min]="minDate ? minDate.toISOString() : undefined"
+    [max]="maxDate ? maxDate.toISOString() : undefined"
+    [readonly]="readonly"
+    cancelText="{{ 'BUTTONS.CANCEL' | translate }}"
+    doneText="{{ 'BUTTONS.OK' | translate }}"
+    (ionChange)="updateDate($event)"
+></ion-datetime>

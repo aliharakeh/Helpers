@@ -1,0 +1,77 @@
+<ion-header *ngIf="!isDone">
+    <ion-toolbar>
+
+        <!-- Close -->
+        <ion-buttons slot="start">
+            <ion-button (click)="close()">
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+
+        <!-- Title -->
+        <ion-title color="primary">
+            <div class="flex flex-col items-center">
+                <div class="font-semibold" *ngIf="wizardService.stepTitle; else wizardTitleBlock">
+                    {{ wizardService.stepTitle | translate }}
+                </div>
+                <ng-template #wizardTitleBlock>
+                    <div class="font-semibold">
+                        {{ title | translate }} ({{ calc(currentComponentIndex + 1) }} / {{ calc(components.length) }})
+                    </div>
+                </ng-template>
+            </div>
+        </ion-title>
+
+        <!-- Custom Action -->
+        <ion-buttons slot="end">
+            <ion-button
+                (click)="wizardService.wizardAction()"
+                [disabled]="!(!!wizardService.wizardActionIcon)"
+                [ngClass]="{'opacity-0': !(!!wizardService.wizardActionIcon)}"
+            >
+                <ion-icon [name]="wizardService.wizardActionIcon" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+
+        <!-- Progress -->
+        <ion-progress-bar [value]="calc(currentComponentIndex + 1) / calc(components.length)"></ion-progress-bar>
+
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <!-- Dynamic Component Content -->
+    <ng-template #componentContent></ng-template>
+</ion-content>
+
+<ion-footer *ngIf="!isDone" class="ios-safe-bottom-area">
+    <ion-grid>
+        <ion-row>
+
+            <!-- Previous Component -->
+            <ion-col size="6">
+                <ion-button
+                    (click)="prev()"
+                    *ngIf="currentComponentIndex > 0"
+                    class="prev-btn h-12"
+                    fill="outline"
+                    expand="block"
+                    shape="round"
+                >{{ 'WIZARD.PREV_BUTTON' | translate }}</ion-button>
+            </ion-col>
+
+            <!-- Next Component -->
+            <ion-col size="6">
+                <ion-button
+                    [disabled]="wizardService.disableNext()"
+                    (click)="next()"
+                    class="h-12"
+                    color="app"
+                    expand="block"
+                    shape="round"
+                >{{ 'WIZARD.NEXT_BUTTON' | translate }}</ion-button>
+            </ion-col>
+
+        </ion-row>
+    </ion-grid>
+</ion-footer>

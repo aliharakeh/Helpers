@@ -1,0 +1,7 @@
+<ion-button class="badge-btn" fill="clear">
+    <ion-text
+        [ngClass]="{'font-semibold text-shade-6': isActivated}"
+        class="text-base text-shade-5"
+    >{{ label }}</ion-text>
+    <ion-badge *ngIf="badge" class="badge" color="danger">{{ badge }}</ion-badge>
+</ion-button>

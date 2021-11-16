@@ -1,0 +1,8 @@
+<ion-grid class="w-full h-full">
+    <ion-row class="w-full h-full flex flex-col justify-center items-center">
+        <ion-col class="flex flex-col justify-center items-center">
+            <ion-spinner [color]="color ? color :  null" class="w-16 h-16"></ion-spinner>
+            <ion-label *ngIf="label" [color]="color ? color : null" class="font-semibold mt-2">{{ label }}</ion-label>
+        </ion-col>
+    </ion-row>
+</ion-grid>

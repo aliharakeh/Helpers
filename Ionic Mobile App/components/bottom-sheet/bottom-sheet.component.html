@@ -1,0 +1,16 @@
+<ion-header>
+    <ion-toolbar class="ios-bottom-sheet-toolbar">
+        <ion-title>
+            <div class="w-full flex justify-center">
+                <div class="handle"></div>
+            </div>
+            <div class="w-full whitespace-normal text-center pb-2">
+                <ion-text class="font-semibold">{{ title }}</ion-text>
+            </div>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<div class="inner-content relative ios-safe-bottom-area">
+    <ng-content></ng-content>
+</div>

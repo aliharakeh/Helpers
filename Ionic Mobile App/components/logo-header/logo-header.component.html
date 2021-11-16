@@ -1,0 +1,53 @@
+<ion-grid>
+    <ion-row [ngClass]="{'justify-center': mode === 'logo-only'}">
+
+        <!-- Sites -->
+        <ion-col *ngIf="mode !== 'logo-only'" class="flex" size="3">
+            <ion-button [routerLink]="['/sites']" class="text-shade-5" fill="clear" size="small">
+                <ion-icon slot="icon-only" src="assets/svg/ic_place_v2.svg"></ion-icon>
+                <ion-badge class="rounded-full px-3">{{ auth.getCurrentSiteIds().length }}</ion-badge>
+            </ion-button>
+        </ion-col>
+
+        <!-- Logo -->
+        <ion-col class="flex justify-center" size="6">
+            <ng-container [ngSwitch]="mode">
+
+                <ng-container *ngSwitchCase="'logo-only'">
+                    <div class="w-16 h-16" *ngIf="!logoSrc; else logoBlock">
+                        <app-loading-spinner></app-loading-spinner>
+                    </div>
+                    <ng-template #logoBlock>
+                        <ion-img [src]="logoSrc" class="logo-large"></ion-img>
+                    </ng-template>
+                </ng-container>
+
+                <div *ngSwitchCase="'title-only'" class="text-center text-xl pt-3">
+                    <ion-label color="primary">{{ title }}</ion-label>
+                </div>
+
+                <ion-img [src]="logoSrc" class="logo-small" *ngSwitchDefault></ion-img>
+
+            </ng-container>
+        </ion-col>
+
+        <!-- Search -->
+        <ion-col *ngIf="mode !== 'logo-only'" class="flex justify-end" size="3">
+            <ion-button
+                (click)="onSearchIconClick()"
+                class="text-shade-5"
+                fill="clear"
+                size="small"
+            >
+                <ion-icon slot="icon-only" src="assets/svg/ic_search.svg"></ion-icon>
+            </ion-button>
+        </ion-col>
+
+    </ion-row>
+
+    <!-- Title -->
+    <ion-row *ngIf="mode === 'both'" class="justify-center text-xl">
+        <ion-label color="dark">{{ title }}</ion-label>
+    </ion-row>
+
+</ion-grid>

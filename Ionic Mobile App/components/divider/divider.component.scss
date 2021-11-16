@@ -1,0 +1,15 @@
+:host {
+    @apply flex justify-center w-full h-full;
+}
+
+.divider {
+    @apply border-0 border-solid text-shade-3;
+}
+
+.vertical {
+    @apply h-full border-r;
+}
+
+.horizontal {
+    @apply w-full border-b;
+}

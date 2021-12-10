@@ -1,4 +1,10 @@
 export class FilterUtil {
+	
+	static quickFilter(data, keyword) {
+		keyword = keyword.toLowerCase();
+		return data.filter(d => JSON.stringify(d).toLowerCase().includes(keyword));
+	}
+	
 
   /*
     filterSettings = {

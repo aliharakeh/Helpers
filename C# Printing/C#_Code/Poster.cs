@@ -16,7 +16,7 @@ namespace Printing
 
         private Poster GeneratePoster(int x, int y, PosterConfig posterConfig, int rotationAngle)
         {
-            // creat
+            // create
             var posterSvg = FromSvg<Poster>(posterConfig.Svg);
 
             // set coordinates

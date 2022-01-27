@@ -203,17 +203,17 @@ namespace Printing
             1) No Duplex:
             -------------
                 a) No Rotation (shape: ↑) => no rotation
-                b) Rotation (shape: ->) rotate 90 degree
+                b) Rotation (shape: ->) => rotate 90 degree
             
             2) Side-by-Side:
             ----------------
-                a) No Rotation (shape: ↑.↑) => duplex double poster size = (2 * width, height)
-                b) Rotation (shape: ->.<-) => duplex double poster size = (2 * height, width) 
+                a) No Rotation (shape: ↑.↑) => duplex double poster size = (w = 2 * width, h = height)
+                b) Rotation (shape: ->.<-) => duplex double poster size = (w = 2 * height, h = width) 
             
             3) Top-Bottom:
             --------------
-                a) No Rotation (shape: ⇅) => duplex double poster size = (width, 2 * height)
-                b) Rotation (shape: ⇉) => duplex double poster size = (height, 2 * width)
+                a) No Rotation (shape: ⇅) => duplex double poster size = (w = width, h = 2 * height)
+                b) Rotation (shape: ⇉) => duplex double poster size = (w = height, h = 2 * width)
     */
 
     public class DuplexMode

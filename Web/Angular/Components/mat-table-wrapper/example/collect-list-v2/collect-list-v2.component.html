@@ -1,0 +1,107 @@
+<app-infinit-scroll class="full" (scrolled)="onScroll()" *ngIf="!calendarIsActive && tableOptions">
+    <app-mat-table-wrapper
+            [data]="collects"
+            [tableOptions]="tableOptions"
+            [withSelection]="true"
+            (rowClick)="openDetails($event)"
+    ><!-- [style.height]="getHeight()" zoom -->
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef [width]="getWidth('status')"></th>
+            <td mat-cell *matCellDef="let row" [width]="getWidth('status')">
+                <div
+                        style="width: 5px; height: 30px"
+                        [style.background-color]="getStatusColor(row)"
+                ></div>
+            </td>
+        </ng-container>
+
+        <!-- Real Weight -->
+        <ng-container matColumnDef="poidsReel">
+            <th mat-header-cell *matHeaderCellDef class="p-text-center" [width]="getWidth('poidsReel')">
+                {{ getLabel('poidsReel') | translate }}
+            </th>
+            <td mat-cell *matCellDef="let row" [width]="getWidth('poidsReel')">
+                <div class="d-flex align-items-center justify-content-center">
+                    <!-- <mat-icon color="warn" *ngIf="row.poidsReel != row.poidsEstime">warning</mat-icon>-->
+                    <input
+                            type="number"
+                            [(ngModel)]="row.poidsReel"
+                            class="ml-2 poidsReel"
+                            (click)="$event.stopPropagation()"
+                            (change)="updateWeight(row)"
+                    >
+                </div>
+            </td>
+        </ng-container>
+
+        <!-- Documents -->
+        <ng-container matColumnDef="documents">
+            <th mat-header-cell *matHeaderCellDef [width]="getWidth('documents')"></th>
+            <td mat-cell *matCellDef="let row" [width]="getWidth('documents')">
+                <div class="d-flex align-items-center justify-content-center">
+                    <button type="button"
+                            class="btn btn-white"
+                            placement="auto"
+                            [ngbPopover]="popcontent"
+                            container="body"
+                            [autoClose]="'outside'"
+                            (hidden)="closeDocumentPopover()"
+                            triggers="manual"
+                            popoverClass="kit-document-popover"
+                            #p1="ngbPopover"
+                            (click)="$event.stopPropagation();
+                            $event.preventDefault();
+                            openDocumentPopover(p1)
+                        "
+                    >
+                        <img src="/assets/svg/kit_document_unchecked.svg" alt="">
+                    </button>
+                    <ng-template #popcontent>
+                        <app-kit-document-popover
+                                [adrIdModal]="'AdrIdModal'"
+                                (closedEvent)="closeDocumentPopover()"
+                                [form]="adrForm"
+                                [collect]="row"
+                                (srcs)="onAdrWaste($event)"
+                                (idDechet)="onIdDechet($event)"
+                                (radioActif)="onAdrRadioActif($event)">
+                        </app-kit-document-popover>
+                    </ng-template>
+                </div>
+            </td>
+        </ng-container>
+
+        <!-- Action -->
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef [width]="getWidth('actions')"></th>
+            <td mat-cell *matCellDef="let row" [width]="getWidth('actions')">
+                <div class="d-flex align-items-center justify-content-center">
+                    <button
+                            *ngIf="showActionBtn(row)"
+                            mat-raised-button
+                            class="text-white"
+                            [style.background-color]="getActionBtnColor(row)"
+                            (click)="$event.stopPropagation(); handleActionBtn(row)"
+                    >{{ getActionBtnLabel(row) | translate }}</button>
+                </div>
+            </td>
+        </ng-container>
+
+    </app-mat-table-wrapper>
+</app-infinit-scroll>
+
+<!-- Calendar View -->
+<app-full-calendar
+        *ngIf="calendarIsActive"
+        #calendarView
+        [step]="step"
+        [stepStatus]="stepStatus"
+></app-full-calendar>
+
+<!-- Loading -->
+<ngx-spinner [fullScreen]="true">
+    <p>{{ 'prestations.loading' | uppercase | translate }}</p>
+</ngx-spinner>
+

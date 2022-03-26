@@ -1,0 +1,36 @@
+table {
+  width: 100%;
+  font-weight: 500;
+}
+
+tr.mat-row {
+  cursor: pointer;
+}
+
+tr.mat-row:hover {
+  background-color: #eeeeee;
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  padding: 8px;
+}
+
+// to apply style to all columns including the external ones from <ng-content>
+:host::ng-deep {
+  .mat-checkbox label {
+    margin-bottom: 0;
+  }
+}
+
+.group-header:hover {
+  cursor: pointer;
+  background-color: rgba(211, 211, 211, 0.349);
+}
+
+.group-header {
+  background-color: transparent;
+  border: 0;
+  box-shadow: inset 0px -1px 0px rgba(0, 0, 0, 0.81);
+}
+
+

@@ -1,0 +1,128 @@
+<div class="container-fluid">
+
+    <div class="row justify-content-between mb-5">
+        <div class="row align-items-center">
+            <div class="title-txt bold">{{ 'NAVBAR.COLLECT_MONITORING' | translate }}</div>
+            <button mat-icon-button (click)="openUserPreferences()">
+                <img src="assets/svg/settings_black.svg" alt="">
+            </button>
+        </div>
+
+        <!-- Data Display Mode -->
+        <mat-button-toggle-group [(ngModel)]="isCalendar" (change)="updateDisplay()" class="toggle-group display-mode">
+            <mat-button-toggle [value]="false" [ngClass]="{ 'text-white' : !isCalendar }">
+                <mat-icon>list</mat-icon>
+                {{ 'NAVBAR.LIST' | translate }}
+            </mat-button-toggle>
+            <mat-button-toggle [value]="true" [ngClass]="{ 'text-white' : isCalendar }">
+                <mat-icon>event</mat-icon>
+                {{ 'NAVBAR.CALENDAR' | translate }}
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+
+    <div class="row justify-content-between align-items-center" *ngIf="!isCalendar">
+
+        <div class="row align-items-center">
+            <div *ngIf="isIntern()" class="pl-2 pr-4">
+                <app-select-type-collect></app-select-type-collect>
+            </div>
+
+            <!-- States -->
+            <mat-button-toggle-group class="toggle-group">
+                <mat-button-toggle
+                        *ngFor="let s of getStatuses()"
+                        [value]="s"
+                        [checked]="s.status === status.status"
+                        (change)="updateStatus(s)"
+                >
+                    {{ s.label | translate }}
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
+        <div class="row align-items-center">
+
+            <!-- Search Bar-->
+            <app-search-bar
+                    [placeholder]="searchBarPlaceholder"
+                    [showAdvancedSearch]="true"
+            ></app-search-bar>
+
+            <!-- Columns Menu -->
+            <button mat-flat-button class="border mx-2" [matMenuTriggerFor]="columnMenu">
+                <mat-icon>view_column</mat-icon>
+                {{ 'PRESTATIONS.SUIVI.COLUMNS' | translate }}
+            </button>
+            <mat-menu #columnMenu="matMenu" class="p-1">
+                <div class="px-2">
+                    <strong>{{ 'PRESTATIONS.SUIVI.COLUMNS_TITLE' | translate: {status: status.label | translate } }}</strong>
+                </div>
+                <table cdkDropList (cdkDropListDropped)="reorderColumns($event)" class="menu-content mt-3">
+                    <tr
+                            *ngFor="let column of status.columns"
+                            cdkDrag
+                            class="my-3 py-2"
+                            (click)="$event.stopPropagation()"
+                    >
+                        <td class="d-flex align-items-center drag-pointer">
+                            <mat-icon>drag_indicator</mat-icon>
+                            <div>{{ column.columnName | translate }}</div>
+                        </td>
+                        <td class="text-center pl-4 pr-2">
+                            <mat-slide-toggle
+                                    (click)="$event.preventDefault();updateTableColumns(column)"
+                                    [checked]="!status?.preferences?.hiddenColumns?.has(column.columnValue)"
+                            ></mat-slide-toggle>
+                        </td>
+                    </tr>
+                </table>
+                <div class="d-flex justify-content-center" *ngIf="columnsChange">
+                    <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="$event.stopPropagation();savePreferences(true)"
+                    >{{ 'PRESTATIONS.SUIVI.SAVE_PREFERENCES' | translate }}</button>
+                </div>
+            </mat-menu>
+
+            <!-- Group Menu -->
+            <button mat-flat-button class="border" [matMenuTriggerFor]="groupMenu">
+                <mat-icon>sort</mat-icon>
+                {{ 'PRESTATIONS.SUIVI.GROUP_BY' | translate }}
+            </button>
+            <mat-menu #groupMenu="matMenu" class="p-1">
+                <div class="px-2">
+                    <strong>{{ 'PRESTATIONS.SUIVI.GROUP_BY_TITLE' | translate: {status: status.label | translate } }}</strong>
+                </div>
+                <mat-radio-group class="radio-group mt-3">
+                    <mat-radio-button
+                            *ngFor="let g of groups"
+                            [value]="g.columnDef"
+                            [checked]="status?.preferences?.groupBy === g.columnDef"
+                            (change)="updateTableGrouping(g)"
+                            (click)="$event.stopPropagation()"
+                    >{{ g.label | translate }}</mat-radio-button>
+                </mat-radio-group>
+                <div class="d-flex justify-content-center" *ngIf="groupChange">
+                    <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="$event.stopPropagation();savePreferences(false)"
+                    >{{ 'PRESTATIONS.SUIVI.SAVE_PREFERENCES' | translate }}</button>
+                </div>
+            </mat-menu>
+
+            <div class="mx-4"></div>
+
+            <!-- Data Date Picker -->
+            <div class="filter d-flex calendar justify-content-end ml-0 row p-0">
+                <app-calendar-custom #calendar></app-calendar-custom>
+            </div>
+        </div>
+    </div>
+
+    <router-outlet></router-outlet>
+
+</div>
+

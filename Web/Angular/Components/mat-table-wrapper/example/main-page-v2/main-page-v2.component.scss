@@ -1,0 +1,115 @@
+ngx-spinner {
+  color: white;
+}
+
+div.container {
+  &.hideScroll {
+    overflow: hidden;
+  }
+}
+
+.calendar {
+  min-width: 16.75rem;
+}
+
+.hide {
+  display: none;
+}
+
+//------------------------------------------- input number -------------------------------------
+div.week-range {
+  input {
+    border: none;
+    width: 8rem;
+    color: #2e2e2e;
+    text-align: center;
+  }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+//--------------------------------------- input number --------------------------------------
+
+.popover-date {
+  width: 15rem;
+}
+
+.btn-group-large {
+  height: 3.2rem;
+}
+
+.menu-content {
+  width: 100%;
+  min-width: 200px;
+  overflow: hidden;
+
+  .mat-slide-toggle.mat-checked {
+    .mat-slide-toggle-bar {
+      background-color: rgba(76, 175, 80, 0.5);
+    }
+
+    .mat-slide-toggle-thumb {
+      background-color: #4CAF50;
+    }
+  }
+
+  .drag-pointer {
+    cursor: move;
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 8px 8px 0 8px;
+}
+
+.toggle-group {
+  .mat-button-toggle {
+    span.mat-button-toggle-label-content {
+      line-height: 36px;
+      padding: 0 24px;
+      font-weight: 600;
+    }
+  }
+
+  .mat-button-toggle-checked {
+    background-color: rgba(63, 81, 181, 0.08);
+  }
+
+}
+
+.display-mode {
+  .mat-button-toggle-checked {
+    background-color: #56B3BD;
+  }
+
+  .mat-button-toggle:not(.mat-button-toggle-checked) {
+    background-color: #EEEEEE;
+    opacity: 50%;
+  }
+}
+

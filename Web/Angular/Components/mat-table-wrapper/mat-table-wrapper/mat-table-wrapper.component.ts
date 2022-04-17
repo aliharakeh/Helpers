@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {MatColumnDef, MatTable, MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
+import {Utils} from '@app/shared-module/providers/Utils';
 
 export class TableOptions {
     columns: TableColumn[] = [];
@@ -72,7 +73,8 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
     @Input() withSelection: boolean = false;
 
     @Input('defaultSelection') set defaultSelection(selection: any[]) {
-        selection.forEach(s => this.selection.toggle(s));
+        this.selection.clear();
+        selection.forEach(s => this.selection.select(s));
     };
 
     @Input('data') set setData(data: any[]) {
@@ -87,14 +89,7 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
         this.textColumns = tableOptions.columns.filter(c => c.textColumn);
         this.displayedColumns = tableOptions.columns.map(c => c.columnDef);
         this.groupByColumns = tableOptions.groupColumns.filter(c => c.groupBy);
-        this.availableTableWidth = 100;
-        this.columnsWithoutSpecificWidth = 0;
-        this.availableTableWidth -= tableOptions.columns.reduce((acc, c) => {
-            if (!c.width) {
-                this.columnsWithoutSpecificWidth++;
-            }
-            return acc + (c.width ? parseInt(c.width.slice(0, -1)) : 0);
-        }, 0);
+        this.updateTableColumnsWidth(tableOptions.columns);
         this.buildDataSource();
     }
 
@@ -108,8 +103,6 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
     textColumns: TableColumn[] = []; // columns that only include text (non-custom columns)
     displayedColumns: string[] = []; // displayed table columns & their order
     groupByColumns: GroupColumn[] = []; // columns responsible for the data grouping
-    availableTableWidth = 100; // available width for columns without specific width
-    columnsWithoutSpecificWidth = 0; // columns without specific width count
     collapsedGroups = new Set<string>(); // groups that are collapsed
     selection = new SelectionModel<any>(true, []); // selected data
 
@@ -182,20 +175,20 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
             this.selection.clear();
         }
         else {
-            // expand all rows first
+            this.selection.clear();
+            this.data.forEach(row => this.selection.select(row));
             this.collapsedGroups.clear();
             this.buildDataSource();
-
-            // select all non group rows
-            this.dataSource.data.forEach(row => !row.isGroup && this.selection.select(row));
         }
-        if (this.withSelection) {
-            this.selectionChange.emit(this.selection.selected);
-        }
+        this.emitSelection();
     }
 
-    toggleRowSelection(row) {
-        this.selection.toggle(row);
+    toggleRowSelection(value) {
+        this.selection.toggle(value);
+        this.emitSelection();
+    }
+
+    emitSelection() {
         if (this.withSelection) {
             this.selectionChange.emit(this.selection.selected);
         }
@@ -207,11 +200,37 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
         return numSelected == numNonGroupRows;
     }
 
-    getWidth(col: TableColumn) {
-        return col.width || (this.availableTableWidth / this.columnsWithoutSpecificWidth) + '%';
+    updateTableColumnsWidth(columns: TableColumn[]) {
+        let columnsWithoutSpecificWidth = 0;
+        const availableTableWidth = 100 - columns.reduce((acc, c) => {
+            if (!c.width) {
+                columnsWithoutSpecificWidth++;
+            }
+            return acc + (c.width ? parseInt(c.width.slice(0, -1)) : 0); // remove % and convert to number
+        }, 0);
+        const autoColumnWidth = availableTableWidth / columnsWithoutSpecificWidth + '%';
+        columns.forEach(c => {
+            if (!c.width) {
+                c.width = autoColumnWidth;
+            }
+        });
     }
 
     rowAction(data: any) {
         this.rowClick.emit(data);
+    }
+
+    getValue(row, col: TableColumn) {
+        const value = col.getValue ? col.getValue(row) : (row[col.columnDef] || '-');
+        const truncate = window.innerWidth < window.screen.width;
+        if (truncate) {
+            let zoomedInPercentage = window.innerWidth * 100 / window.screen.availWidth;
+            // remove extra % and keep in range of (10, 20, 30, ..., 100)
+            zoomedInPercentage = Math.floor(zoomedInPercentage / 10) * 10;
+            // keep min 6 chars by default
+            const truncateValue = value.length > 6 ? (value.length * zoomedInPercentage) / 100 : value.length;
+            return Utils.limitStringLenght(value, truncateValue);
+        }
+        return value;
     }
 }

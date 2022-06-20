@@ -3,20 +3,10 @@
             [data]="collects"
             [tableOptions]="tableOptions"
             [withSelection]="true"
+            [defaultSelection]="selection"
             (rowClick)="openDetails($event)"
-    ><!-- [style.height]="getHeight()" zoom -->
-
-        <!-- Status -->
-        <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef [width]="getWidth('status')"></th>
-            <td mat-cell *matCellDef="let row" [width]="getWidth('status')">
-                <div
-                        style="width: 5px; height: 30px"
-                        [style.background-color]="getStatusColor(row)"
-                ></div>
-            </td>
-        </ng-container>
-
+            (selection)="onSelectionChange($event)"
+    >
         <!-- Real Weight -->
         <ng-container matColumnDef="poidsReel">
             <th mat-header-cell *matHeaderCellDef class="p-text-center" [width]="getWidth('poidsReel')">
@@ -81,8 +71,7 @@
                     <button
                             *ngIf="showActionBtn(row)"
                             mat-raised-button
-                            class="text-white"
-                            [style.background-color]="getActionBtnColor(row)"
+                            class="text-white action-btn"
                             (click)="$event.stopPropagation(); handleActionBtn(row)"
                     >{{ getActionBtnLabel(row) | translate }}</button>
                 </div>
@@ -92,12 +81,51 @@
     </app-mat-table-wrapper>
 </app-infinit-scroll>
 
+<!-- Selection Actions -->
+<div
+        *ngIf="selection.length > 0"
+        class="panel d-flex align-items-center justify-content-center shadow-transition"
+        cdkDrag
+>
+    <div class="p-0 bold md-txt mr-2">
+        {{ 'PRESTATIONS.SUIVI.SELECTION' | translate:{count: selection.length} }}
+    </div>
+    <button
+            *ngIf="['TOUTES', 'PLANNIFIEE'].includes(step)"
+            class="btn btn-white btn-custom-primary thick"
+            [disabled]="validationCollections.length === 0"
+            (click)="validateCollections(true)"
+    >
+        <mat-icon>timer</mat-icon>
+        {{ 'PRESTATIONS.SUIVI.MULTI_SELECTION.QUICK_VALIDATION' | translate }} ({{ validationCollections.length }})
+    </button>
+    <button
+            *ngIf="['TOUTES', 'PLANNIFIEE'].includes(step)"
+            class="btn btn-white btn-custom-primary thick"
+            [disabled]="validationCollections.length === 0"
+            (click)="validateCollections(false)"
+    >
+        <mat-icon>done</mat-icon>
+        {{ 'PRESTATIONS.SUIVI.MULTI_SELECTION.VALIDATION' | translate }} ({{ validationCollections.length }})
+    </button>
+    <button
+            *ngIf="['TOUTES', 'COLLECTE'].includes(step)"
+            class="btn btn-white btn-custom-primary thick"
+            [disabled]="closableCollections.length === 0"
+            (click)="closeSelectionCollections()"
+    >
+        <mat-icon>delete</mat-icon>
+        {{ 'PRESTATIONS.SUIVI.MULTI_SELECTION.CLOSE' | translate }} ({{ closableCollections.length }})
+    </button>
+</div>
+
 <!-- Calendar View -->
 <app-full-calendar
         *ngIf="calendarIsActive"
         #calendarView
         [step]="step"
         [stepStatus]="stepStatus"
+        [stepColors]="statusColors"
 ></app-full-calendar>
 
 <!-- Loading -->

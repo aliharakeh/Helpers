@@ -45,8 +45,11 @@ import {
     ValidateCollectModalComponent
 } from '@app/suivi-collectes-module/validate-collect-modal/validate-collect-modal.component';
 import {TableOptions} from '@app/suivi-collectes-module/mat-table-wrapper/mat-table-wrapper.component';
-import {TableOptionsService} from '@app/suivi-collectes-module/providers/table-options.service';
+import {PreferencesService} from '@app/suivi-collectes-module/providers/preferences.service';
 import {CollectService} from '@app/prestation/providers/collect.service';
+import {TrinovConfigurationService} from '@app/admin-module/providers/trinov-configuration.service';
+import {ValidateCollectsComponent} from '@app/suivi-collectes-module/validate-collects/validate-collects.component';
+import {TrackdechetsService} from '@app/admin-module/providers/trackdechets.service';
 
 class RequestModel {
     siteIds: Array<number>;
@@ -69,7 +72,6 @@ class RequestModel {
     styleUrls: ['./collect-list-v2.component.scss']
 })
 export class CollectListV2Component implements OnInit, OnDestroy {
-    tableOptions: TableOptions;
 
     public collects;
     public isWaitBSD = true;
@@ -132,6 +134,13 @@ export class CollectListV2Component implements OnInit, OnDestroy {
     query = null;
     dateParam = null;
 
+    tableOptions: TableOptions;
+    userPreferences: any;
+    selection: MouvementSurSiteModel[] = [];
+    closableCollections: MouvementSurSiteModel[] = [];
+    validationCollections: MouvementSurSiteModel[] = [];
+    statusColors: any;
+
     constructor(
         private readonly collectStatService: CollectStatService,
         public readonly utils: Utils,
@@ -158,15 +167,31 @@ export class CollectListV2Component implements OnInit, OnDestroy {
         private readonly selectTypeCollect: SelectTypeCollectService,
         private readonly previousRouteService: PreviousRouteService,
         public dialog: MatDialog,
-        private tableOptionsService: TableOptionsService,
-        private collectService: CollectService
+        private preferencesService: PreferencesService,
+        private collectService: CollectService,
+        private trinovConfig: TrinovConfigurationService,
+        private trackdechetsService: TrackdechetsService
     ) { }
 
     ngOnInit(): void {
+        this.trackdechetsService.getCountUnlinkTrackdechets(this.authService.getCurrentSiteIds()).pipe(
+            filter((res: any) => res && res.success),
+            tap((res) => {
+                this.trackdechetsService.setBsdCount(res.result?.count);
+            })
+        ).subscribe();
         const advancedSearchConfig = this.appConfigService.getConfiguration()['advancedSearch'];
         const advancedSearchTab = advancedSearchConfig['tabConfigUrl'][this.router.url.split('/')[this.router.url.split('/').length - 1].split('?')[0]];
         this.searchBarService.showAdvancedSearch(true, advancedSearchTab, advancedSearchConfig);
         this.subscribeQueue();
+        this.preferencesService.data$.pipe(
+            takeWhile(() => !this.isDestroyed),
+            tap(data => {
+                this.tableOptions = data?.tableOptions;
+                this.userPreferences = data?.userPreferences;
+                this.statusColors = data?.statusColors;
+            })
+        ).subscribe();
         this.inisializeComponentCalendar();
         this.sidenavService.spyOnSidenavCollapse$
             .pipe(
@@ -233,7 +258,7 @@ export class CollectListV2Component implements OnInit, OnDestroy {
                         this.selectTypeCollect.typeCollect$
                     ])
                 ),
-                filter(() => !this.calendarIsActive),
+                // filter(() => !this.calendarIsActive),
                 takeWhile(() => !this.isDestroyed),
                 tap(([query, filterValue, startEndDate]) => {
 
@@ -333,15 +358,6 @@ export class CollectListV2Component implements OnInit, OnDestroy {
                 })
             )
             .subscribe();
-
-
-        /* ADDITION HERE */
-        this.tableOptionsService.data$.pipe(
-            takeWhile(() => !this.isDestroyed),
-            tap(tableOptions => {
-                this.tableOptions = tableOptions;
-            })
-        ).subscribe();
     }
 
     ngOnDestroy() {
@@ -363,7 +379,6 @@ export class CollectListV2Component implements OnInit, OnDestroy {
     }
 
     private subscribeQueue() {
-
 
         this.queue$.pipe(
             takeWhile(() => !this.isDestroyed),
@@ -431,7 +446,7 @@ export class CollectListV2Component implements OnInit, OnDestroy {
                     // );
                 }
                 else if (res.result.length === 0 && this.cachedData.length === 0) {
-                    this.collects = null;
+                    this.collects = [];
                 }
                 this.reInitFilterStatus();
             })
@@ -455,6 +470,7 @@ export class CollectListV2Component implements OnInit, OnDestroy {
                 )
             )
             .subscribe();
+
         const url = this.previousRouteService.getPreviousUrl();
         if (!['/suivi/collectes/collectes-en-attente',
             '/suivi/collectes/collectes-cloturees',
@@ -463,8 +479,8 @@ export class CollectListV2Component implements OnInit, OnDestroy {
             '/suivi/collectes/toutes-les-collectes',
             '/gestion-tiers/collectes-to-be-treated',
             '/gestion-tiers/collectes-to-be-confirmed',
-            '/gestion-tiers/collectes-planned'].includes(url.split('?')[0]) && this.route.snapshot.queryParamMap.get('typeCalendar') == null) {
-            this.calendarCustomService.initialize(this.dateParam);
+            '/gestion-tiers/collectes-planned'].includes(url?.split('?')[0]) && this.route.snapshot.queryParamMap.get('typeCalendar') == null) {
+            this.calendarCustomService.initialize(this.dateParam, this.userPreferences.defaultPeriod);
         }
     }
 
@@ -580,16 +596,16 @@ export class CollectListV2Component implements OnInit, OnDestroy {
                 )
                 .then((confirmed) => {
                     if (confirmed) {
-                        this.toCloturer(collect.id);
+                        this.toCloturer([collect.id]);
                     }
                 })
                 .catch(() => { });
         }
     }
 
-    toCloturer(idMouvementPrestation: number) {
+    toCloturer(idMouvementPrestations: number[]) {
         this.collectStatService
-            .setCompleteCollect([idMouvementPrestation])
+            .setCompleteCollect(idMouvementPrestations)
             .pipe(
                 take(1),
                 tap(() => {
@@ -742,17 +758,6 @@ export class CollectListV2Component implements OnInit, OnDestroy {
         return ['PLANNIFIEE', 'COLLECTE'].includes(data.etape);
     }
 
-    getActionBtnColor(data: MouvementSurSiteModel) {
-        switch (data.etape) {
-            case 'PLANNIFIEE':
-                return '#000000';
-            case 'COLLECTE':
-                return '#3389FF';
-            default:
-                return '';
-        }
-    }
-
     handleActionBtn(collect) {
         switch (collect.etape) {
             case 'PLANNIFIEE':
@@ -782,16 +787,78 @@ export class CollectListV2Component implements OnInit, OnDestroy {
     }
 
     getStatusColor(data) {
-        return '#ff0000';
+        return this.userPreferences[data.etape].statusColor;
+    }
+
+    onSelectionChange(selection: MouvementSurSiteModel[]) {
+        this.selection = selection;
+        this.validationCollections = [];
+        this.closableCollections = [];
+        if (['TOUTES', 'PLANNIFIEE'].includes(this.step)) {
+            this.validationCollections = selection.filter(c => c.etape === 'PLANNIFIEE');
+        }
+        if (['TOUTES', 'COLLECTE'].includes(this.step)) {
+            this.closableCollections = selection.filter(c => c.etape === 'COLLECTE');
+        }
+    }
+
+    validateCollections(quickMode) {
+        const validCollections = this.validationCollections.filter(c => this.validateService.checkIfCollectCanBeValidate(c));
+        const dialog = this.dialog.open(ValidateCollectsComponent, {
+            data: {
+                quickMode,
+                collections: validCollections,
+                nonValidCount: this.validationCollections.length - validCollections.length
+            },
+            width: '40%'
+        });
+
+        dialog.afterClosed().pipe(
+            tap(res => {
+                if (res) {
+                    const ids = this.validationCollections.map(c => c.id);
+                    this.selection = this.selection.filter(c => !ids.includes(c.id));
+                    this.validationCollections = [];
+                    this.refresh();
+                }
+            })
+        ).subscribe();
+    }
+
+    closeSelectionCollections() {
+        const validCollections = this.closableCollections.filter(c => this.clotureService.checkIfCollectCanBeConfirmed(c));
+        this.confirmeService
+            .confirm(
+                this.translator.instant('CONFIRMATIONDIALOG.TITLE_CLOTURER'),
+                `
+                <div class="bold">
+                    <div>
+                        ${this.translator.instant('PRESTATIONS.SUIVI.MULTI_SELECTION.CLOSE_CONFIRM')}
+                    </div>
+                    <div class="mt-2 text-primary">
+                        ${this.translator.instant('PRESTATIONS.SUIVI.MULTI_SELECTION.CLOSE_COUNT', { count: validCollections.length })}
+                    </div>
+                    <div class="mt-1 text-danger" *ngIf="data.nonValidCount > 0">
+                         ${this.translator.instant('PRESTATIONS.SUIVI.MULTI_SELECTION.CLOSE_ERROR_COUNT', { count: this.closableCollections.length - validCollections.length })}
+                    </div>
+                </div>
+                `,
+                this.translator.instant('CONFIRMATIONDIALOG.OK'),
+                this.translator.instant('CONFIRMATIONDIALOG.CANCEL'),
+                'md',
+                'center',
+                'start',
+                'primary'
+            )
+            .then((confirmed) => {
+                if (confirmed && validCollections.length > 0) {
+                    const ids = validCollections.map(c => c.id);
+                    this.selection = this.selection.filter(c => !ids.includes(c.id));
+                    this.closableCollections = [];
+                    this.toCloturer(ids);
+                    this.refresh();
+                }
+            })
+            .catch(() => { });
     }
 }
-
-// zoom
-// getHeight() {
-    // console.log(window.innerHeight);
-    // console.log(screen.availHeight);
-    // console.log('-------------------------------------------');
-// }
-// window.onresize = function (e) {
-//     console.log(e);
-// };

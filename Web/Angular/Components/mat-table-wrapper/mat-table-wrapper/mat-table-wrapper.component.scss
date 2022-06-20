@@ -1,45 +1,67 @@
 table {
   width: 100%;
   font-weight: 500;
+  border-radius: 10px 10px 0 0;
+  //overflow:hidden !important;
+}
+
+tr.mat-header-row {
+  background-color: #F1F3F5;
 }
 
 tr.mat-row {
   cursor: pointer;
+  position: relative;
 }
 
 tr.mat-row:hover {
-  background-color: #eeeeee;
+  background-color: #F1F3F5;
 }
 
-th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
-  padding: 8px;
+/* using ::after instead of ::before since ::before will add a new <td> to the table row */
+tr.status::after {
+  content: '';
+  width: 4px;
+  height: 60%;
+  position: absolute;
+  left: -5px;
+  top: 20%;
+  border-radius: 2px 0 0 2px;
+  background-color: var(--status-color);
+}
+
+th.mat-header-cell {
+  padding: 10px 8px;
+}
+
+td.mat-cell, td.mat-footer-cell {
+  padding: 12px 8px;
+}
+
+th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+  padding-left: 12px;
+}
+
+th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
+  padding-right: 12px;
 }
 
 // to apply style to all columns including the external ones from <ng-content>
 :host::ng-deep {
-
-  th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
-    padding-left: 12px;
-  }
-
-  th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
-    padding-right: 12px;
-  }
-
   .mat-checkbox label {
     margin-bottom: 0;
   }
 }
 
+.group-header {
+  background: #F1F3F5;
+  border-radius: 10px 10px 0 0;
+  border: 0;
+}
+
 .group-header:hover {
   cursor: pointer;
   background-color: rgba(211, 211, 211, 0.349);
-}
-
-.group-header {
-  background-color: transparent;
-  border: 0;
-  box-shadow: inset 0px -1px 0px rgba(0, 0, 0, 0.81);
 }
 
 

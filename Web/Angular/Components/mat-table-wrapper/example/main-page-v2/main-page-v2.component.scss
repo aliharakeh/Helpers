@@ -1,52 +1,31 @@
+@import 'src/assets/scss/_variables.scss';
+
 ngx-spinner {
   color: white;
 }
 
-div.container {
-  &.hideScroll {
-    overflow: hidden;
-  }
-}
-
 .calendar {
   min-width: 16.75rem;
+  margin-right: 0 !important;
 }
-
-.hide {
-  display: none;
-}
-
-//------------------------------------------- input number -------------------------------------
-div.week-range {
-  input {
-    border: none;
-    width: 8rem;
-    color: #2e2e2e;
-    text-align: center;
-  }
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-//--------------------------------------- input number --------------------------------------
 
 .popover-date {
   width: 15rem;
 }
 
-.btn-group-large {
-  height: 3.2rem;
+.suivi-header {
+  font-size: 24px;
 }
 
-.menu-content {
+.suivi-alert {
+  display: flex;
+  align-items: center;
+  background-color: #FFEBEB;
+  padding: 12px;
+  font-weight: 500;
+}
+
+.menu-content::ng-deep {
   width: 100%;
   min-width: 200px;
   overflow: hidden;
@@ -75,6 +54,16 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  ::ng-deep .mat-slide-toggle.mat-checked {
+    .mat-slide-toggle-bar {
+      background-color: rgba(76, 175, 80, 0.5);
+    }
+
+    .mat-slide-toggle-thumb {
+      background-color: #4CAF50;
+    }
+  }
 }
 
 .cdk-drag-placeholder {
@@ -88,10 +77,29 @@ input[type="number"] {
 }
 
 .toggle-group {
-  .mat-button-toggle {
+
+  &.display-mode {
+    .mat-button-toggle-checked {
+      background-color: #56B3BD;
+    }
+
+    .mat-button-toggle:not(.mat-button-toggle-checked) {
+      background-color: #EEEEEE;
+      opacity: 50%;
+    }
+  }
+
+  .status-bar {
+    width: 3px;
+    height: 20px;
+    border-radius: 2px;
+  }
+
+  ::ng-deep .mat-button-toggle {
     span.mat-button-toggle-label-content {
       line-height: 36px;
-      padding: 0 24px;
+      padding: 0 14px 0 12px;
+      height: 40px;
       font-weight: 600;
     }
   }
@@ -102,14 +110,21 @@ input[type="number"] {
 
 }
 
-.display-mode {
-  .mat-button-toggle-checked {
-    background-color: #56B3BD;
-  }
-
-  .mat-button-toggle:not(.mat-button-toggle-checked) {
-    background-color: #EEEEEE;
-    opacity: 50%;
-  }
+.menu-btn::ng-deep span {
+  height: 40px;
+  display: flex !important;
+  align-items: center;
+  column-gap: 3px;
+  font-weight: 600;
 }
 
+.margin-fix {
+  margin-right: 5rem !important;
+}
+
+.reconciliation {
+  background-color: #01ABB5;
+  color: white;
+  border-radius: 5px;
+  filter: drop-shadow(0px 4px 8px #DEE2E6);
+}

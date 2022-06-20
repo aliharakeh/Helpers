@@ -1,1 +1,1 @@
-configuration options are in `main-page-v2` while the component use is in `collect-list-v2` where table options are got through a service called `table options service`
+configuration options are in `main-page-v2` while the component use is in `collect-list-v2` where table options are got through a service called `preferences service`

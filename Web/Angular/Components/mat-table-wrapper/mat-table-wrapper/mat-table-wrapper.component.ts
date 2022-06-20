@@ -15,6 +15,7 @@ import {Utils} from '@app/shared-module/providers/Utils';
 export class TableOptions {
     columns: TableColumn[] = [];
     groupColumns: GroupColumn[] = [];
+    getStatusColor?: (data) => string = (_) => 'red';
 
     constructor(options: TableOptions | {}) {
         Object.assign(this, options);
@@ -38,7 +39,8 @@ export class TableColumn {
 
 export class GroupColumn {
     name: string = '';
-    labelFn?: (data, groupData) => string = (data) => data[this.name];
+    valueFn?: (data) => string = (data) => data[this.name];
+    labelFn?: (data, groupData) => string = (data, _) => data[this.name];
     groupBy: boolean;
     colspan?: number;
     position?: 'left' | 'center' | 'right' = 'left';
@@ -152,7 +154,7 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
     }
 
     getGroupName(data) {
-        return this.groupByColumns.reduce((acc, c, i) => acc + (i > 0 ? '_' : '') + data[c.name], '');
+        return this.groupByColumns.reduce((acc, c, i) => acc + (i > 0 ? '_' : '') + c.valueFn(data), '');
     }
 
     get groupColumns() {

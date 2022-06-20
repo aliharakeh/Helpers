@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z2 mat-table-wrapper">
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
 
     <!-- Text Columns with or without selection -->
     <ng-container *ngFor="let col of textColumns; let i = index" [matColumnDef]="col.columnDef">
@@ -41,13 +41,19 @@
 
     <!-- Default Table Rows -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="rowAction(row)"></tr>
+    <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns;"
+            (click)="rowAction(row)"
+            class="status"
+            style="--status-color: {{ tableOptions.getStatusColor(row) }}; "
+    ></tr>
 
     <!-- Group Rows : will be used instead of the default row definition above when the `when` parameter has a true value -->
     <tr
         mat-row
-        class="group-header"
         *matRowDef="let row; columns: groupColumns; when: isGroup"
+        class="group-header"
         (click)="toggleGroup(row)"
     ></tr>
 

@@ -2,6 +2,7 @@ import {
     AfterContentInit,
     Component,
     ContentChildren,
+    ElementRef,
     EventEmitter,
     Input,
     Output,
@@ -10,22 +11,83 @@ import {
 } from '@angular/core';
 import {MatColumnDef, MatTable, MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
-import {Utils} from '@app/shared-module/providers/Utils';
 
 export class TableOptions {
-    columns: TableColumn[] = [];
-    groupColumns: GroupColumn[] = [];
-    getStatusColor?: (data) => string = (_) => 'red';
+    _columns: TableColumn[] = [];
+    _groupColumns: GroupColumn[] = [];
+    getStatusColor?: (data) => string = (_) => 'transparent';
+    groupSpacing?: string = '16px';
+
+    get columns(): TableColumn[] {
+        return this._columns;
+    }
+
+    set columns(columns: TableColumn[]) {
+        this._updateTableColumnsWidth(columns);
+        this._columns = columns;
+    }
+
+    get groupColumns(): GroupColumn[] {
+        return this._groupColumns;
+    }
+
+    set groupColumns(groupColumns: GroupColumn[]) {
+        this._updateGroupingColumnsWidth(groupColumns);
+        this._groupColumns = groupColumns;
+    }
 
     constructor(options: TableOptions | {}) {
         Object.assign(this, options);
     }
+
+    _updateTableColumnsWidth(columns: TableColumn[]) {
+        const { totalWidthTaken, columnsWithoutSpecificWidth } = this._getWidthUsageInfo(columns);
+        const availableTableWidth = 100 - totalWidthTaken;
+        const autoColumnWidth = (availableTableWidth / columnsWithoutSpecificWidth) + '%';
+        columns.forEach(c => {
+            if (!c.width) {
+                c.width = autoColumnWidth;
+            }
+        });
+    }
+
+    _getWidthUsageInfo(columns: TableColumn[]) {
+        let columnsWithoutSpecificWidth = 0;
+        const totalWidthTaken = columns.reduce((acc, c) => {
+            if (!c.width) {
+                columnsWithoutSpecificWidth++;
+            }
+            return acc + (c.width ? parseInt(c.width.slice(0, -1)) : 0); // remove % and convert to number
+        }, 0);
+        return {
+            totalWidthTaken,
+            columnsWithoutSpecificWidth
+        };
+    }
+
+    _updateGroupingColumnsWidth(groupColumns: GroupColumn[]) {
+        let startColIndex = 0;
+        let endColIndex = 0;
+        for (let groupColumn of groupColumns) {
+            endColIndex = startColIndex + groupColumn.colspan;
+            groupColumn.width = this._mergeWidths(this._columns.slice(startColIndex, endColIndex));
+            startColIndex = endColIndex;
+        }
+    }
+
+    _mergeWidths(columns: TableColumn[]) {
+        return Math.round(
+            columns.reduce((acc, c) => {
+                return acc + (c.width ? parseFloat(c.width.slice(0, -1)) : 0);
+            }, 0)
+        ) + '%';
+    }
 }
 
 export class TableColumn {
-    label: string = '';
-    columnDef: string = '-';
-    textColumn: boolean = true;
+    columnDef: string;
+    label?: string = '';
+    textColumn?: boolean = true;
     getValue?: (row) => string;
     headerStyles?: string;
     cellStyles?: string;
@@ -41,8 +103,9 @@ export class GroupColumn {
     name: string = '';
     valueFn?: (data) => string = (data) => data[this.name];
     labelFn?: (data, groupData) => string = (data, _) => data[this.name];
-    groupBy: boolean;
-    colspan?: number;
+    groupBy?: boolean = true;
+    colspan?: number = 1;
+    width?: string;
     position?: 'left' | 'center' | 'right' = 'left';
 
     constructor(options: GroupColumn) {
@@ -51,12 +114,12 @@ export class GroupColumn {
 }
 
 /*
-* The Idea of this component is to have a simple & extendable wrapper over mat-table.
+* The Idea of this component is to have a simple & extendable wrapper over cdk-table.
 * Features:
 *   - group table data by adding a row before each group as a header to the grouped data. This header can be customized
-*     through the `groupColumns` property in the table options.
+*     through the GroupColumn class properties in the table options.
 *   - single & multi select of table data.
-*   - column customization through the table options.
+*   - column customization through the TableColumn class properties options.
 *   - custom external columns added through `ng-content` to customize any non-text column that needs to be added
 *     to the table.
 * Note: for simplicity, this component doesn't include any complex conditional logic on columns or rows as this can
@@ -74,10 +137,14 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
 
     @Input() withSelection: boolean = false;
 
+    @Input('linesPerRow') set setLinesPerRow(linesPerRow: number) {
+        this.elRef.nativeElement.style.setProperty('--cdk-line-clamp', linesPerRow);
+    }
+
     @Input('defaultSelection') set defaultSelection(selection: any[]) {
         this.selection.clear();
         selection.forEach(s => this.selection.select(s));
-    };
+    }
 
     @Input('data') set setData(data: any[]) {
         this.data = data;
@@ -88,10 +155,11 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
 
     @Input('tableOptions') set setTableOptions(tableOptions: TableOptions) {
         this.tableOptions = new TableOptions(tableOptions);
-        this.textColumns = tableOptions.columns.filter(c => c.textColumn);
-        this.displayedColumns = tableOptions.columns.map(c => c.columnDef);
+        for (const col of tableOptions.columns) {
+            this.displayedColumns.push(col.columnDef);
+            if (col.textColumn) this.textColumns.push(col);
+        }
         this.groupByColumns = tableOptions.groupColumns.filter(c => c.groupBy);
-        this.updateTableColumnsWidth(tableOptions.columns);
         this.buildDataSource();
     }
 
@@ -107,6 +175,9 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
     groupByColumns: GroupColumn[] = []; // columns responsible for the data grouping
     collapsedGroups = new Set<string>(); // groups that are collapsed
     selection = new SelectionModel<any>(true, []); // selected data
+    previousGroupName = '';
+
+    constructor(private elRef: ElementRef) {}
 
     ngAfterContentInit() {
         this.columnDefs.forEach(columnDef => this.table.addColumnDef(columnDef)); // add external columns
@@ -114,17 +185,36 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
 
     buildDataSource() {
         this.dataSource.data = this.groupedData();
+        this.elRef.nativeElement.style.setProperty('--cdk-num-of-cols', this.displayedColumns.length);
     }
 
     groupedData() {
         if (this.groupByColumns.length === 0) return this.data;
 
-        const customReducer = (groups, row) => {
-            let groupName = this.getGroupName(row);
+        let groups = this.data?.reduce((groups, row) => this._customReducer(groups, row), {});
+        let groupArray = groups ? Object.keys(groups).map(key => groups[key]) : [];
 
-            // add a grouping row as a header for each group of data
-            if (!groups[groupName]) {
-                groups[groupName] = [{
+        // flatten the data to create one single level array containing the group & data rows
+        let flatList = groupArray?.reduce((a, c) => a.concat(c), []);
+
+        // we filter the final data by keeping the grouping rows & the non-collapsed rows
+        return flatList?.filter(row => row.isGroup || !this.collapsedGroups.has(this._getGroupName(row)));
+    }
+
+    _customReducer(groups, row) {
+        const groupName = this._getGroupName(row);
+        // add a grouping row as a header for each group of data
+        if (!groups[groupName]) {
+
+            // update previous group label
+            // if (groupName !== this.previousGroupName) {
+            //     groups[this.previousGroupName][0].groupLabel = this._getGroupLabel(groups[this.previousGroupName][0]);
+            // }
+            //
+            // this.previousGroupName = groupName;
+
+            groups[groupName] = [
+                {
                     groupName,
                     data: this.tableOptions.groupColumns.reduce((acc, c) => {
                         return {
@@ -132,33 +222,34 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
                             [c.name]: row[c.name]
                         };
                     }, {}),
+                    groupLabel: '',
                     groupData: [],
                     isReduced: this.collapsedGroups.has(groupName),
                     isGroup: true
-                }];
-            }
-            // add the data to the group
-            groups[groupName].push(row);
-            groups[groupName][0].groupData.push(row);
-            return groups;
+                }
+            ];
+        }
+        const rowData = {
+            ...row,
+            __rowStatusColor__: this.tableOptions.getStatusColor(row)
         };
+        // add the data to the group
+        groups[groupName].push(rowData);
+        // leave a pointer to all group row data inside the group row
+        groups[groupName][0].groupData.push(rowData);
+        return groups;
+    };
 
-        let groups = this.data.reduce(customReducer, {});
-        let groupArray = Object.keys(groups).map(key => groups[key]);
-
-        // flatten the data to create one single level array containing the group & data rows
-        let flatList = groupArray.reduce((a, c) => a.concat(c), []);
-
-        // we filter the final data by keeping the grouping rows & the non-collapsed rows
-        return flatList.filter(row => row.isGroup || !this.collapsedGroups.has(this.getGroupName(row)));
-    }
-
-    getGroupName(data) {
+    _getGroupName(data) {
         return this.groupByColumns.reduce((acc, c, i) => acc + (i > 0 ? '_' : '') + c.valueFn(data), '');
     }
 
+    // _getGroupLabel(group: any[]) {
+    //     return this.groupByColumns.reduce((acc, c, i) => acc + (i > 0 ? '_' : '') + c.valueFn(data), '');
+    // }
+
     get groupColumns() {
-        return this.tableOptions.groupColumns.map(c => `__${c.name}__`).concat('__icon__');
+        return this.tableOptions.groupColumns.map(c => `__${c.name}__`);
     }
 
     isGroup(index, item): boolean {
@@ -178,7 +269,7 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
         }
         else {
             this.selection.clear();
-            this.data.forEach(row => this.selection.select(row));
+            this.data?.forEach(row => this.selection.select(row));
             this.collapsedGroups.clear();
             this.buildDataSource();
         }
@@ -198,41 +289,11 @@ export class MatTableWrapperComponent<T> implements AfterContentInit {
 
     isAllSelected() {
         const numSelected = this.selection.selected.length;
-        const numNonGroupRows = this.data.length;
-        return numSelected == numNonGroupRows;
-    }
-
-    updateTableColumnsWidth(columns: TableColumn[]) {
-        let columnsWithoutSpecificWidth = 0;
-        const availableTableWidth = 100 - columns.reduce((acc, c) => {
-            if (!c.width) {
-                columnsWithoutSpecificWidth++;
-            }
-            return acc + (c.width ? parseInt(c.width.slice(0, -1)) : 0); // remove % and convert to number
-        }, 0);
-        const autoColumnWidth = availableTableWidth / columnsWithoutSpecificWidth + '%';
-        columns.forEach(c => {
-            if (!c.width) {
-                c.width = autoColumnWidth;
-            }
-        });
+        const numNonGroupRows = this.data?.length;
+        return numSelected === numNonGroupRows;
     }
 
     rowAction(data: any) {
         this.rowClick.emit(data);
-    }
-
-    getValue(row, col: TableColumn) {
-        const value = col.getValue ? col.getValue(row) : (row[col.columnDef] || '-');
-        const truncate = window.innerWidth < window.screen.width;
-        if (truncate) {
-            let zoomedInPercentage = window.innerWidth * 100 / window.screen.availWidth;
-            // remove extra % and keep in range of (10, 20, 30, ..., 100)
-            zoomedInPercentage = Math.floor(zoomedInPercentage / 10) * 10;
-            // keep min 6 chars by default
-            const truncateValue = value.length > 6 ? (value.length * zoomedInPercentage) / 100 : value.length;
-            return Utils.limitStringLenght(value, truncateValue);
-        }
-        return value;
     }
 }

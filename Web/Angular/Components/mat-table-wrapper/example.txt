@@ -1,0 +1,43 @@
+data = [
+	{a: 'a sdasd das das dad asdsa das ddas sad ad asdsa as asd das das asd ad ad das da', b: 'b', c: 'c', d: 'd', e: 'e', f: 'f'},
+	{a: 'a', b: 'bdas dasd dsad sa das', c: 'c', d: 'd', e: 'e', f: 'f'},
+	{a: 'a', b: 'b', c: 'csddsdsadadas', d: 'd', e: 'e', f: 'f'},
+];
+tableOptions: TableOptions = new TableOptions({
+	columns: [
+		new TableColumn({
+			columnDef: 'a',
+			width: '50%',
+			textColumn: true,
+			label: 'A'
+		}),
+		new TableColumn({
+			columnDef: 'b',
+			width: '5%',
+			textColumn: true,
+			label: 'B'
+		}),
+		new TableColumn({
+			columnDef: 'c',
+			textColumn: true,
+			label: 'C'
+		}),
+		new TableColumn({
+			columnDef: 'd',
+			textColumn: true,
+			label: 'D'
+		}),
+		new TableColumn({
+			columnDef: 'e',
+			textColumn: true,
+			label: 'E'
+		}),
+		new TableColumn({
+			columnDef: 'f',
+			textColumn: true,
+			label: 'F'
+		})
+	],
+	groupColumns: [new GroupColumn({ name: 'b'})],
+	getStatusColor: (data) => 'red',
+});

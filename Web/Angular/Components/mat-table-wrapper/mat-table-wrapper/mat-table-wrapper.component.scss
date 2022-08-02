@@ -1,67 +1,161 @@
-table {
-  width: 100%;
-  font-weight: 500;
-  border-radius: 10px 10px 0 0;
-  //overflow:hidden !important;
+/*************************************
+* Theme Properties
+*************************************/
+:host {
+    /* table */
+    --cdk-table-border: #797575;
+    --cdk-table-border-radius: 10px 10px 0 0;
+    --cdk-table-font: 500;
+
+    /* rows */
+    --cdk-header-row-fw: 600;
+    --cdk-header-row-bg: #797575;
+    --cdk-group-row-bg: #797575;
+    --cdk-group-row-hover-bg: #797575;
+    --cdk-row-hover-bg: #797575;
+    --cdk-row-padding: 0; // 0 12px
+    --cdk-row-status-color: transparent;
+    --cdk-row-status-width: 4px;
+    --cdk-row-status-height: 60%;
+    --cdk-row-status-left: -5px;
+    --cdk-row-status-top: 20%;
+    --cdk-row-status-border: 2px 0 0 2px;
+
+    /* cells */
+    --cdk-header-cell-padding: 10px 8px;
+    --cdk-cell-padding: 12px 8px;
+
+    /* utils */
+    --cdk-min-cell-width: 6ch;
+    --cdk-num-of-cols: 1; // set to 1 by default, will be updated through JS later in the code to get the exact number
+    --cdk-line-clamp: 1;
 }
 
-tr.mat-header-row {
-  background-color: #F1F3F5;
+/*************************************
+* Layout
+*************************************/
+cdk-table {
+    display: block;
+    min-width: calc(var(--cdk-min-cell-width) * var(--cdk-num-of-cols));
+
+    cdk-header-row,
+    cdk-row {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    cdk-header-cell,
+    cdk-cell {
+        display: inline-block;
+        box-sizing: border-box;
+        min-width: var(--cdk-min-cell-width); // a trick to make truncate work with flex
+    }
 }
 
-tr.mat-row {
-  cursor: pointer;
-  position: relative;
+/*************************************
+* Design
+*************************************/
+cdk-table {
+    width: 100%;
+    font-weight: var(--cdk-table-font);
+    border-radius: var(--cdk-table-border-radius);
 }
 
-tr.mat-row:hover {
-  background-color: #F1F3F5;
+/* Table Header Row */
+cdk-header-row {
+    background-color: var(--cdk-header-row-bg);
+    border-radius: var(--cdk-table-border-radius);
 }
 
-/* using ::after instead of ::before since ::before will add a new <td> to the table row */
-tr.status::after {
-  content: '';
-  width: 4px;
-  height: 60%;
-  position: absolute;
-  left: -5px;
-  top: 20%;
-  border-radius: 2px 0 0 2px;
-  background-color: var(--status-color);
+/* Table Row */
+cdk-row {
+    cursor: pointer;
+    position: relative;
+    padding: var(--cdk-row-padding);
+
+    &:hover {
+        background-color: var(--cdk-row-hover-bg);
+    }
+
+    &.cdk-status::before {
+        content: '';
+        width: var(--cdk-row-status-width);
+        height: var(--cdk-row-status-height);
+        position: absolute;
+        left: var(--cdk-row-status-left);
+        top: var(--cdk-row-status-top);
+        border-radius: var(--cdk-row-status-border);
+        background-color: var(--cdk-row-status-color);
+    }
+
+    &:not(.cdk-group-header) {
+        border-inline: 1px solid var(--cdk-table-border);
+        border-bottom: 1px solid var(--cdk-table-border);
+
+        cdk-cell:not(:last-of-type) {
+            border-right: 1px solid var(--cdk-table-border);
+        }
+    }
 }
 
-th.mat-header-cell {
-  padding: 10px 8px;
+/* Table Header Cell */
+cdk-header-cell {
+    padding: var(--cdk-header-cell-padding);
 }
 
-td.mat-cell, td.mat-footer-cell {
-  padding: 12px 8px;
+/* Table Cell */
+cdk-cell {
+    padding: var(--cdk-cell-padding);
 }
 
-th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
-  padding-left: 12px;
+/* Group Row */
+.cdk-group-header {
+    background: var(--cdk-group-row-bg);
+    border-radius: var(--cdk-table-border-radius);
+    border: 1px solid var(--cdk-group-row-bg);
+    margin-top: var(--cdk-group-row-spacing);
+
+    &:hover {
+        cursor: pointer;
+        background-color: var(--cdk-group-row-hover-bg);
+    }
+
+    cdk-cell {
+        font-weight: var(--cdk-header-row-fw);
+
+        &:not(:last-of-type) {
+            border-right: 1px solid transparent;
+        }
+    }
 }
 
-th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
-  padding-right: 12px;
-}
-
-// to apply style to all columns including the external ones from <ng-content>
+/* Mat Checkbox */
 :host::ng-deep {
-  .mat-checkbox label {
-    margin-bottom: 0;
-  }
+    .mat-checkbox label {
+        margin-bottom: 0;
+    }
 }
 
-.group-header {
-  background: #F1F3F5;
-  border-radius: 10px 10px 0 0;
-  border: 0;
+/* Utils */
+.cdk-cell-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
-.group-header:hover {
-  cursor: pointer;
-  background-color: rgba(211, 211, 211, 0.349);
+.cdk-mx {
+    margin-inline: 0.5rem;
 }
 
+.cdk-mr {
+    margin-right: 0.5rem;
+}
 
+.cdk-line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: var(--cdk-line-clamp);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-wrap: break-word; // break overflowed unbreakable words to wrap them and apply the line-clamp effect
+}

@@ -1,77 +1,76 @@
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+<cdk-table [dataSource]="dataSource">
 
     <!-- Text Columns with or without selection -->
-    <ng-container *ngFor="let col of textColumns; let i = index" [matColumnDef]="col.columnDef">
-        <th mat-header-cell *matHeaderCellDef [width]="col.width" [style]="col?.headerStyles">
-            <div class="d-flex align-items-center">
+    <ng-container *ngFor="let col of textColumns; let i = index" [cdkColumnDef]="col.columnDef">
+        <cdk-header-cell *cdkHeaderCellDef [style.width]="col.width" [style]="col?.headerStyles">
+            <div class="cdk-cell-wrapper">
                 <!-- Master Columns Selection -->
                 <div *ngIf="withSelection && i === 0">
                     <mat-checkbox (change)="$event ? toggleAllRowsSelection() : null"
                                   [checked]="selection.hasValue() && isAllSelected()"
                                   [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                  class="mx-2"
+                                  class="cdk-mx"
                     >
                     </mat-checkbox>
                 </div>
                 <!-- Column Label -->
-                <div class="w-100" [style.text-align]="col.position">{{ col.label | translate }}</div>
+                <div class="cdk-line-clamp" [title]="col.label" [style.text-align]="col.position">{{ col.label }}</div>
             </div>
-        </th>
-        <td mat-cell *matCellDef="let row" [width]="col.width" [style]="col?.cellStyles">
-            <div class="d-flex align-items-center">
+        </cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row" [style.width]="col.width" [style]="col?.cellStyles">
+            <div class="cdk-cell-wrapper">
                 <!-- Column Selection -->
                 <div *ngIf="withSelection && i === 0">
                     <mat-checkbox (click)="$event.stopPropagation()"
                                   (change)="toggleRowSelection(row)"
                                   [checked]="selection.isSelected(row)"
-                                  class="mx-2"
+                                  class="cdk-mx"
                     >
                     </mat-checkbox>
                 </div>
                 <!-- Column Value -->
-                <div class="flex-grow-1" [style.text-align]="col.position">
-                    {{ getValue(row, col) }}
-                </div>
+                <div class="cdk-line-clamp" [title]="row[col.columnDef]" [style.text-align]="col.position">{{ row[col.columnDef] }}</div>
             </div>
-        </td>
+        </cdk-cell>
     </ng-container>
 
     <!-- External Columns -->
     <ng-content></ng-content>
 
     <!-- Default Table Rows -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-    <tr
-            mat-row
-            *matRowDef="let row; columns: displayedColumns;"
+    <cdk-header-row *cdkHeaderRowDef="displayedColumns; sticky: true"></cdk-header-row>
+    <cdk-row
+            *cdkRowDef="let row; columns: displayedColumns;"
             (click)="rowAction(row)"
-            class="status"
-            style="--status-color: {{ tableOptions.getStatusColor(row) }}; "
-    ></tr>
+            class="cdk-status"
+            style="--cdk-row-status-color: {{ row.__rowStatusColor__ }};"
+    ></cdk-row>
 
     <!-- Group Rows : will be used instead of the default row definition above when the `when` parameter has a true value -->
-    <tr
+    <cdk-row
         mat-row
-        *matRowDef="let row; columns: groupColumns; when: isGroup"
-        class="group-header"
+        *cdkRowDef="let row; columns: groupColumns; when: isGroup"
+        class="cdk-group-header"
+        style="--cdk-group-row-spacing: {{ tableOptions.groupSpacing }};"
         (click)="toggleGroup(row)"
-    ></tr>
+    ></cdk-row>
 
     <!-- Group header cells -->
-    <ng-container *ngFor="let groupCol of tableOptions.groupColumns" [matColumnDef]="'__' + groupCol.name + '__'">
-        <td mat-cell [attr.colspan]="groupCol.colspan" *matCellDef="let group">
-            <div [style.text-align]="groupCol.position">
-                <strong>{{ groupCol.labelFn(group.data, group.groupData) }}</strong>
+    <ng-container *ngFor="let groupCol of tableOptions.groupColumns; let i = index" [cdkColumnDef]="'__' + groupCol.name + '__'">
+        <cdk-cell [style.width]="groupCol.width" *cdkCellDef="let group">
+            <div class="cdk-cell-wrapper">
+                <!-- Expand/Collapse Icon -->
+                <div class="cdk-mr" *ngIf="i === 0">
+                    <mat-icon *ngIf="!group.isReduced">expand_less</mat-icon>
+                    <mat-icon *ngIf="group.isReduced">expand_more</mat-icon>
+                </div>
+
+                <!-- Data -->
+                <div [style.text-align]="groupCol.position" class="cdk-line-clamp">
+                    {{ groupCol.labelFn(group.data, group.groupData) }}
+                </div>
             </div>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="__icon__">
-        <td colspan="999" mat-cell *matCellDef="let group">
-            <div class="d-flex justify-content-end align-items-center">
-                <mat-icon *ngIf="!group.isReduced">expand_less</mat-icon>
-                <mat-icon *ngIf="group.isReduced">expand_more</mat-icon>
-            </div>
-        </td>
+        </cdk-cell>
     </ng-container>
 
-</table>
+</cdk-table>

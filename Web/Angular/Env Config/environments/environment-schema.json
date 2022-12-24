@@ -1,0 +1,254 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "patternProperties": {
+        ".": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "PRODUCTION": {
+                    "type": "boolean"
+                },
+                "APP_NAME": {
+                    "type": "string"
+                },
+                "APP_TITLE": {
+                    "type": "string"
+                },
+                "BASE_URL": {
+                    "type": "string"
+                },
+                "API_ENDPOINTS": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "API_BASE_URL": {
+                            "type": "string"
+                        },
+                        "API_SPEC_URL": {
+                            "type": "string"
+                        },
+                        "API_SSO_URL": {
+                            "type": "string"
+                        },
+                        "API_DASHBOARD": {
+                            "type": "string"
+                        },
+                        "API_USER": {
+                            "type": "string"
+                        },
+                        "API_DWD_URL": {
+                            "type": "string"
+                        },
+                        "API_REPORTS_URL": {
+                            "type": "string"
+                        },
+                        "API_REQUETEUR": {
+                            "type": "string"
+                        },
+                        "API_NOTIFICATION_URL": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "AUTHENTICATION_STORAGE": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "ACCESS_TOKEN": {
+                            "type": "string"
+                        },
+                        "REFRESH_TOKEN": {
+                            "type": "string"
+                        },
+                        "SSO_REFRESH_TOKEN": {
+                            "type": "string"
+                        },
+                        "CURRENT_SITE_IDS": {
+                            "type": "string"
+                        },
+                        "CURRENT_SITE_STATUS": {
+                            "type": "string"
+                        },
+                        "CURRENT_USER_INFO": {
+                            "type": "string"
+                        },
+                        "CURRENT_USER_LOGIN": {
+                            "type": "string"
+                        },
+                        "IS_SSO": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "APP_STORAGE": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "PREFERENCES": {
+                            "type": "string"
+                        },
+                        "NOTIFICATIONS": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "COLLECTION_VALIDATION": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "IMAGES_LIMIT": {
+                            "type": "integer"
+                        },
+                        "QUALITY": {
+                            "type": "integer"
+                        },
+                        "WIDTH": {
+                            "type": "integer"
+                        },
+                        "HEIGHT": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "CACHE": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "TTL": {
+                            "type": "object",
+                            "properties": {
+                                "SECONDS": {
+                                    "type": "integer"
+                                },
+                                "MINUTES": {
+                                    "type": "integer"
+                                },
+                                "HOURS": {
+                                    "type": "integer"
+                                }
+                            }
+                        },
+                        "KEY": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "GEOLOCATION_OPTIONS": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enableHighAccuracy": {
+                            "type": "boolean"
+                        },
+                        "maximumAge": {
+                            "type": "integer"
+                        },
+                        "timeout": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "GOOGLE_MAPS_API": {
+                    "type": "string"
+                },
+                "PUBLIC_APP_ANDROID_LINK": {
+                    "type": "string"
+                },
+                "PUBLIC_APP_IOS_LINK": {
+                    "type": "string"
+                },
+                "VERSION": {
+                    "type": "string"
+                },
+                "SENTRY_DSN": {
+                    "type": "string"
+                },
+                "SSO": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "PROTOCOL": {
+                            "type": "string"
+                        },
+                        "BASE_URL": {
+                            "type": "string"
+                        },
+                        "LOGIN_URL": {
+                            "type": "string"
+                        },
+                        "LOGOUT_URL": {
+                            "type": "string"
+                        },
+                        "REDIRECT_URL": {
+                            "type": "string"
+                        },
+                        "SESSION_CLEAR_URL": {
+                            "type": "string"
+                        },
+                        "TIMEOUT": {
+                            "type": "integer"
+                        },
+                        "JWT_CHECK_DELAY": {
+                            "type": "integer"
+                        },
+                        "CLIENT_ID": {
+                            "type": "string"
+                        },
+                        "SCOPE": {
+                            "type": "string"
+                        },
+                        "RESPONSE_TYPE": {
+                            "type": "string"
+                        },
+                        "ACCESS_TYPE": {
+                            "type": "string"
+                        },
+                        "PROMPT": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "PROTOCOL",
+                        "BASE_URL",
+                        "LOGIN_URL",
+                        "REDIRECT_URL"
+                    ],
+                    "allOf": [
+                        {
+                            "if": {
+                                "properties": {
+                                    "PROTOCOL": {
+                                        "pattern": ".*OAUTH2.*"
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "CLIENT_ID",
+                                    "SCOPE",
+                                    "RESPONSE_TYPE"
+                                ]
+                            }
+                        },
+                        {
+                            "if": {
+                                "properties": {
+                                    "PROTOCOL": {
+                                        "const": "GOOGLE_OAUTH2"
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "ACCESS_TYPE",
+                                    "PROMPT"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

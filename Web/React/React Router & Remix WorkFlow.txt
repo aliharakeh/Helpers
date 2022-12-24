@@ -1,0 +1,15 @@
+React Router v6 & Remix:
+------------------------
+- Normal Work-Flow
+------------------
+	- work as if you are doing a multi-page app 
+	- forms
+	- CRUD nested routes (/add, /:id, /delete, ...)
+	- action redirects
+	- navigation to parent route (closing modal, back button, ...)
+	- use url params to select and show specific list item details on page (list items details, ...)
+
+- Fetcher Work-Flow:
+--------------------
+	- when no redirection is needed (ex: delete operation)
+	- synchronize uncontrolled inputs with props again inside useEffect() (when using ref instead of setState for input control)

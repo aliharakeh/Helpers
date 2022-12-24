@@ -1,0 +1,98 @@
+{
+    "carrefour": {
+        "APP_NAME": "Carrefour",
+        "BASE_URL": "https://carrefour.trinov.com"
+    },
+    "cora": {
+        "APP_NAME": "Cora",
+        "BASE_URL": "https://cora.trinov.com"
+    },
+    "eiffage": {
+        "APP_NAME": "Eiffage",
+        "BASE_URL": "https://eiffage.trinov.com"
+    },
+    "grt": {
+        "APP_NAME": "GRT",
+        "BASE_URL": "https://staging-grt-externe.trinov.com"
+    },
+    "rte": {
+        "APP_NAME": "RTE",
+        "BASE_URL": "https://staging-rte.trinov.com"
+    },
+    "invivo": {
+        "APP_NAME": "Invivo",
+        "BASE_URL": "https://invivo.trinov.com"
+    },
+    "kingfisher": {
+        "APP_NAME": "Kingfisher",
+        "BASE_URL": "https://kingfisher.trinov.com"
+    },
+    "leroymerlin": {
+        "APP_NAME": "Leroymerlin",
+        "BASE_URL": "https://pilote-leroymerlin.trinov.com",
+        "SSO": {
+            "PROTOCOL": "OAUTH2",
+            "BASE_URL": "https://pilote-leroymerlin.trinov.com/",
+            "LOGIN_URL": "https://idpb2e-rec.adeo.com/as/authorization.oauth2",
+            "REDIRECT_URL": "https://pilote-leroymerlin.trinov.com/",
+            "SESSION_CLEAR_URL": "https://idpb2e-rec.adeo.com/idp/startSLO.ping",
+            "TIMEOUT": 20000,
+            "JWT_CHECK_DELAY": 300,
+            "CLIENT_ID": "0R97b60d7d5481670458543a07b8633d1f",
+            "SCOPE": "openid profile email groups advprofile",
+            "RESPONSE_TYPE": "code"
+        }
+    },
+    "trinov": {
+        "APP_NAME": "Trinov",
+        "BASE_URL": "https://dev.trinov.com"
+    },
+    "local": {
+        "APP_NAME": "Local",
+        "BASE_URL": "",
+        "API_ENDPOINTS": {
+            "API_BASE_URL": "http://localhost:8080/dwd_web/suivi",
+            "API_SPEC_URL": "https://dev.trinov.com/api/rte",
+            "API_SSO_URL": "https://dev.trinov.com/api/sso",
+            "API_DASHBOARD": "https://dev.trinov.com/api/tdb",
+            "API_USER": "http://localhost:8082/api/user",
+            "API_DWD_URL": "https://dev.trinov.com/dwd_web/dwd",
+            "API_REPORTS_URL": "https://dev.trinov.com/api/report",
+            "API_REQUETEUR": "https://dev.trinov.com/api/requeteur",
+            "API_NOTIFICATION_URL": "https://dev.trinov.com/api/notification"
+        }
+    },
+    "android-simulator": {
+        "APP_NAME": "Android Simulator",
+        "BASE_URL": "",
+        "API_ENDPOINTS": {
+            "API_BASE_URL": "http://10.0.2.2:8080/dwd_web/suivi",
+            "API_SPEC_URL": "https://pilote-leroymerlin.trinov.com/api/rte",
+            "API_SSO_URL": "https://pilote-leroymerlin.trinov.com/api/sso",
+            "API_DASHBOARD": "https://pilote-leroymerlin.trinov.com/api/tdb",
+            "API_USER": "http://10.0.2.2:8082/api/user",
+            "API_DWD_URL": "https://pilote-leroymerlin.trinov.com/dwd_web/dwd",
+            "API_REPORTS_URL": "https://pilote-leroymerlin.trinov.com/api/report",
+            "API_REQUETEUR": "https://pilote-leroymerlin.trinov.com/api/requeteur",
+            "API_NOTIFICATION_URL": "https://pilote-leroymerlin.trinov.com/api/notification"
+        },
+        "SSO": {
+            "PROTOCOL": "OAUTH2",
+            "BASE_URL": "https://pilote-leroymerlin.trinov.com/",
+            "LOGIN_URL": "https://idpb2e-rec.adeo.com/as/authorization.oauth2",
+            "LOGOUT_URL": "https://pilote-leroymerlin.trinov.com/login",
+            "REDIRECT_URL": "https://pilote-leroymerlin.trinov.com/",
+            "TIMEOUT": 20000,
+            "JWT_CHECK_DELAY": 300,
+            "CLIENT_ID": "0R97b60d7d5481670458543a07b8633d1f",
+            "SCOPE": "openid profile email groups advprofile",
+            "RESPONSE_TYPE": "code",
+            "ACCESS_TYPE": "offline",
+            "PROMPT": "consent"
+        }
+    },
+    "production": {
+        "PRODUCTION": true,
+        "SENTRY_DSN": "https://c08653ab45cc4d129ec1c68aebb92c7d@sentry.reporting-dechets.com/21"
+    }
+}

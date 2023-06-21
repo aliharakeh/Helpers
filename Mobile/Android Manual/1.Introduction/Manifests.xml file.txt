@@ -1,5 +1,0 @@
-- Contains all information about the app (min API/SDK, max API/SDK, all activities, main activity,...etc).
-
-- Must be updated with any new activity that u add.
-
-- It is used by the market to see the app API level and tell you if your device can install the app.

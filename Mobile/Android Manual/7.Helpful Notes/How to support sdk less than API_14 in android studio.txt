@@ -1,7 +1,0 @@
-1. go to files -> project structure -> app -> properties
-2. change Compilr Sdk Version to 25.etc
-3. change Build Tools Version to 25.etc
-4. go to project -> Gradle Scripts -> build.gradle (Module: app)
-5. put minSdkVersion to 10
-6. put targetSdkVersion t0 25
-7. in dependencies change first compile to -> compile 'com.android.support:appcompat-v7:25.+'

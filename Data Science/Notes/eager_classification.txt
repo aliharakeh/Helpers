@@ -1,5 +1,0 @@
-Eager learners construct a classification model based on the given training data before receiving data for classification.
-It must be able to commit to a single hypothesis that covers the entire instance space. Due to the model construction,
-eager learners take a long time for train and less time to predict.
-
-Ex. Decision Tree, Naive Bayes, Artificial Neural Networks

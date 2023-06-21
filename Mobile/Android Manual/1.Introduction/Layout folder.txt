@@ -1,3 +1,0 @@
-- This folder contains all the .xml layout files that your app uses.
-
-- To add a file, right click on the folder and choose new xml layout file.

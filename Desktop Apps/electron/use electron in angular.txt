@@ -1,8 +1,0 @@
-Issue:
-	- can't import electron node modules in angular
-
-solution 1:
-	- use window.require('module')
-
-Solutin 2 (better)
-	- use ngx-elecron electron service

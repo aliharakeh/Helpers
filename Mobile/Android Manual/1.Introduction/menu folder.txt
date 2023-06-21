@@ -1,5 +1,0 @@
-- This folder contains all the .xml menu files that your app uses.
-
-- If it is not visible then create it by adding a new resource folder in 'res' specifying it as a menu resource folder.
-
-- To add a file, right click on the folder and choose new menu xml file.

@@ -1,3 +1,0 @@
-npm install electron-edge-js --save
-
-https://www.npmjs.com/package/electron-edge-js

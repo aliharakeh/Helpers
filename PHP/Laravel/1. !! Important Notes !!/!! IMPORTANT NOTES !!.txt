@@ -1,4 +1,0 @@
-For Non id PK Columns
----------------------
-    1) protected $primaryKey = 'pk-name';
-    2) public $incrementing = false;

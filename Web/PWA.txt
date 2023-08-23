@@ -1,0 +1,23 @@
+Install:
+--------
+
+	From Web:
+	-----------
+		- Normal web install only creates a home screen icon (normal web app with no browser ui).
+		- Only Safari is allowed to install PWAs on iOS versions before 16.4. PWAs can be installed on iOS/iPadOS 16.4 or later from any supporting browser.
+		- Only Chrome will install the app & add it to home screen on Android while other browesers will just add it to home screen.
+		
+	Mobile Stores:
+	--------------
+		- Needs a tool to generate a native device app with a web view wrapper.
+
+	Info:
+	-----
+		- The PWA will be found where the OS saves other applications, within a folder specific to the browser.
+		- The browser that was used to install a PWA is the one used to run that PWA.
+		- You can install the same PWA from a different browser and that the two apps will behave as two different instances and will not share any data.
+		- The browser used to install the PWA will know the PWA is installed, but other browsers will not have access to the installed status.
+		
+Uninstall:
+----------
+	- Uninstall app or remove icon from home screen.

@@ -1,0 +1,20 @@
+Windows Variables:
+------------------
+	- Set the Language Mode to Constrained instead of Full.
+	- Check Language Mode: $ExecutionContext.SessionState.LanguageMode
+	- Variable:
+		- Name: __PSLockDownPolicy
+		- value: 4
+	
+Windows Features:
+-----------------
+	- Turn off `Windows PowerShell 2.0` (old version with a lot of security issues)
+
+Group Policy Editor:
+--------------------
+	- go to `Computer Configuration --> Adminstrative Templates --> Windows Components --> Windows PowerShell`
+	- change `Turn on Script Execution` to disabled (this is the default behavior in windows that can be overrided by shell commands, but we can disable this through this option)
+	- Install PowerShell v7 from github:
+		- copy the `PowerShellCoreExecutionPolicy.admx` policy file to `C:Windows\PolicyDefinitions` folder
+		- copy the `PowerShellCoreExecutionPolicy.adml` language file to `C:Windows\PolicyDefinition\en-US` folder
+		- disable it in group policy editor, found at the root `PowerShell Core` folder 

@@ -22,7 +22,8 @@ const scssFiles = getAllFiles('src').filter(file => file.endsWith('.scss'));
 scssFiles.forEach(file => {
   console.log('Cleaning', file);
   let content = fs.readFileSync(file, 'utf8');
-  const contentWithoutApplyRule = content.replace(/@apply\s[\s\S]*?;/g, '');
-  const cleanedEmptyClasses = contentWithoutApplyRule.replace(/\.[-_a-zA-Z0-9]+\s*\{\s*\}/g, '');
-  fs.writeFileSync(file, cleanedEmptyClasses, 'utf8');
+  content = content.replace(/@apply\s[\s\S]*?;/g, '');
+  // doesn't support nested empty classes
+  content = content.replace(/\.[-_a-zA-Z0-9]+\s*\{\s*\}/g, '');
+  fs.writeFileSync(file, content, 'utf8');
 });

@@ -17,9 +17,9 @@ npm i -D unocss
     "ng": "ng",
     "start": "ng serve",
     "build": "npm run unocss:build & npm run unocss:clean & ng build",
-    "unocss:watch": "unocss src/styles.scss src/app/**/* -o src/unocss.css --watch",
+    "unocss:watch": "unocss --watch",
+    "unocss:build": "unocss",
     "unocss:clean": "node clean-apply-rule.js",
-    "unocss:build": "unocss src/styles.scss src/app/**/* -o src/unocss.css
     // ...
   },
   // ...
